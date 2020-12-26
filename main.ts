@@ -17,8 +17,8 @@ function roll_around_sprite (s: game.LedSprite) {
     aiming_quadrant = determineQuadrant(current_roll_in_degrees, current_pitch_in_degrees)
     sprite_direction = directionForQuadrant(Math.abs(current_roll_in_degrees), Math.abs(current_pitch_in_degrees), aiming_quadrant)
     main_sprite.set(LedSpriteProperty.Direction, sprite_direction)
-    // basic.pause(100)
     main_sprite.move(1)
+    basic.pause(1000 - 3 * Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2))
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
@@ -44,21 +44,18 @@ main_sprite = game.createSprite(3, 1)
 let goal_sprite = game.createSprite(0, 0)
 basic.forever(function () {
     roll_around_sprite(main_sprite)
-    basic.pause(100)
 })
-/**
- * Comment by John's dad:
- * 
- * Note that sprites will roll along edges when relative direction exceeds 45 current_pitch_in_degrees in effect simulating some degree of "wall friction". Thus there is no need to program specifically for edge cases. For example, this will not move when direction is set below 45 (but will at anything above that):
- * 
- * s = game.create_sprite(1, 0)
- * 
- * s.set(LedSpriteProperty.DIRECTION, 45)
- * 
- * s.move(4)
- * 
- * Note also that the only way to achieve local scope variables using blocks is to have them as python function parameters. Blocks will generate any others as globals
- */
+// Comment by John's dad:
+// 
+// Note that sprites will roll along edges when relative direction exceeds 45 current_pitch_in_degrees in effect simulating some degree of "wall friction". Thus there is no need to program specifically for edge cases. For example, this will not move when direction is set below 45 (but will at anything above that):
+// 
+// s = game.create_sprite(1, 0)
+// 
+// s.set(LedSpriteProperty.DIRECTION, 45)
+// 
+// s.move(4)
+// 
+// Note also that the only way to achieve local scope variables using blocks is to have them as python function parameters. Blocks will generate any others as globals
 basic.forever(function () {
     basic.pause(800)
     goal_sprite.delete()
