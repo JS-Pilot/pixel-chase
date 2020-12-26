@@ -1,50 +1,69 @@
-def determineQuadrant():
-    global current_quadrant
+def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
     if current_roll_in_degrees >= 0 and current_pitch_in_degrees <= 0:
-        current_quadrant = "top_right"
+        quadrant = "top_right"
     elif current_roll_in_degrees >= 0 and current_pitch_in_degrees > 0:
-        current_quadrant = "bottom_right"
+        quadrant = "bottom_right"
     elif current_roll_in_degrees < 0 and current_pitch_in_degrees >= 0:
-        current_quadrant = "bottom_left"
+        quadrant = "bottom_left"
     else:
-        current_quadrant = "top_left"
-def directionForQuadrant():
-    global direction
-    direction = Math.atan(absolute_roll / absolute_pitch) * 57.2958
-    if current_quadrant == "top_right":
-        direction = 90 - direction
-    elif current_quadrant == "bottom_right":
-        direction = direction + 90
-    elif current_quadrant == "bottom_left":
-        direction = 270 - direction
+        quadrant = "top_left"
+    return quadrant
+def roll_around_sprite(s: game.LedSprite):
+    global current_roll_in_degrees, current_pitch_in_degrees, aiming_quadrant, sprite_direction
+    current_roll_in_degrees = input.rotation(Rotation.ROLL)
+    current_pitch_in_degrees = input.rotation(Rotation.PITCH)
+    aiming_quadrant = determineQuadrant(current_roll_in_degrees, current_pitch_in_degrees)
+    sprite_direction = directionForQuadrant(abs(current_roll_in_degrees),
+        abs(current_pitch_in_degrees),
+        aiming_quadrant)
+    main_sprite.set(LedSpriteProperty.DIRECTION, sprite_direction)
+    # basic.pause(100)
+    main_sprite.move(1)
+def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_quadrant: str):
+    global angle
+    angle = Math.atan(absolute_roll / max(absolute_pitch, 0.001)) * 57.2958
+    if aiming_quadrant == "top_right":
+        direction = angle
+    elif aiming_quadrant == "bottom_right":
+        direction = angle + 90
+    elif aiming_quadrant == "bottom_left":
+        direction = angle + 180
     else:
-        direction = 270 + direction
-direction = 0
+        direction = angle + 270
+    return direction
+"""
+
+Comment by John's dad:
+
+Note that sprites will roll along edges when relative direction exceeds 45 current_pitch_in_degrees in effect simulating some degree of "wall friction". Thus there is no need to program specifically for edge cases. For example, this will not move when direction is set below 45 (but will at anything above that):
+
+s = game.create_sprite(1, 0)
+
+s.set(LedSpriteProperty.DIRECTION, 45)
+
+s.move(4)
+
+Note also that the only way to achieve local scope variables using blocks is to have them as python function parameters. Blocks will generate any others as globals
+
+"""
+angle = 0
+sprite_direction = 0
+aiming_quadrant = ""
 current_pitch_in_degrees = 0
 current_roll_in_degrees = 0
-current_quadrant = ""
-absolute_pitch = 0
-absolute_roll = 0
-current_quadrant = "top_right"
-main_sprite = game.create_sprite(2, 4)
+main_sprite: game.LedSprite = None
+main_sprite = game.create_sprite(3, 1)
 goal_sprite = game.create_sprite(0, 0)
 
 def on_forever():
-    global current_roll_in_degrees, current_pitch_in_degrees, absolute_pitch, absolute_roll
-    current_roll_in_degrees = input.rotation(Rotation.ROLL)
-    current_pitch_in_degrees = input.rotation(Rotation.PITCH)
-    determineQuadrant()
-    absolute_pitch = abs(current_pitch_in_degrees)
-    absolute_roll = abs(current_roll_in_degrees)
-    directionForQuadrant()
-    main_sprite.set(LedSpriteProperty.DIRECTION, direction)
-    main_sprite.move(1)
-basic.forever(on_forever)
-
-def on_forever2():
     global goal_sprite
     basic.pause(800)
     goal_sprite.delete()
     basic.pause(800)
     goal_sprite = game.create_sprite(0, 0)
+basic.forever(on_forever)
+
+def on_forever2():
+    roll_around_sprite(main_sprite)
+    basic.pause(100)
 basic.forever(on_forever2)
