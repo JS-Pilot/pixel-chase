@@ -19,12 +19,20 @@ function sanitize_lean (lean: number) {
     }
     return lean
 }
+function restartgame () {
+    level = 1
+    enemy_sprite.delete()
+    goal_sprite.delete()
+    main_sprite.delete()
+    playLevel()
+}
 function determineLevelWin () {
     if (touching_for_total_of_milliseconds >= touching_milliseconds_to_win) {
         goal_sprite.delete()
         main_sprite.set(LedSpriteProperty.Blink, 100)
         level += 1
         basic.pause(2000)
+        main_sprite.delete()
         playLevel()
     }
 }
@@ -41,13 +49,30 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
     }
     return quadrant
 }
+function checkandhandleEnemytouch () {
+    if (main_sprite.isTouching(enemy_sprite)) {
+        if (main_sprite.get(LedSpriteProperty.Y) == 4) {
+            main_sprite.set(LedSpriteProperty.Y, 0)
+        }
+        while (main_sprite.get(LedSpriteProperty.Y) < 4) {
+            main_sprite.set(LedSpriteProperty.Direction, 180)
+            main_sprite.move(1)
+            basic.pause(300)
+        }
+        restartgame()
+    }
+}
 function playLevel () {
-    touching_milliseconds_to_win = 1000
+    touching_milliseconds_to_win = 500
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
-    main_sprite = game.createSprite(3, 4)
+    main_sprite = game.createSprite(2, 2)
     goal_sprite = game.createSprite(0, 0)
     goal_sprite.set(LedSpriteProperty.Blink, 500)
+    if (level == 2) {
+        enemy_sprite = game.createSprite(3, 4)
+        enemy_sprite.set(LedSpriteProperty.Blink, 50)
+    }
 }
 function roll_around_sprite (s: game.LedSprite) {
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
@@ -82,15 +107,20 @@ let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
 let touching_milliseconds_to_win = 0
+let level = 0
 let lean = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
+let enemy_sprite: game.LedSprite = null
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
-let level = 1
-playLevel()
+main_sprite = game.createSprite(0, 0)
+goal_sprite = game.createSprite(0, 0)
+enemy_sprite = game.createSprite(0, 0)
+restartgame()
 basic.forever(function () {
     roll_around_sprite(main_sprite)
     determineTouching()
     determineLevelWin()
+    checkandhandleEnemytouch()
 })

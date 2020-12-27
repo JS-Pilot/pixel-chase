@@ -15,6 +15,10 @@ def sanitize_lean(lean: number):
     elif lean < -80:
         lean = -80
     return lean
+def restartgame():
+    global level
+    level = 1
+    playLevel()
 def determineLevelWin():
     global level
     if touching_for_total_of_milliseconds >= touching_milliseconds_to_win:
@@ -22,6 +26,8 @@ def determineLevelWin():
         main_sprite.set(LedSpriteProperty.BLINK, 100)
         level += 1
         basic.pause(2000)
+        main_sprite.delete()
+        playLevel()
 def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
     if current_roll_in_degrees >= 0 and current_pitch_in_degrees <= 0:
         quadrant = "top_right"
@@ -32,6 +38,26 @@ def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees:
     else:
         quadrant = "top_left"
     return quadrant
+def checkandhandleEnemytouch():
+    if main_sprite.is_touching(enemy_sprite):
+        if main_sprite.get(LedSpriteProperty.Y) == 4:
+            main_sprite.set(LedSpriteProperty.Y, 0)
+        while main_sprite.get(LedSpriteProperty.Y) < 4:
+            main_sprite.set(LedSpriteProperty.DIRECTION, 180)
+            main_sprite.move(1)
+            basic.pause(300)
+        restartgame()
+def playLevel():
+    global touching_milliseconds_to_win, touching_for_total_of_milliseconds, last_touch_time, main_sprite, goal_sprite, enemy_sprite
+    touching_milliseconds_to_win = 500
+    touching_for_total_of_milliseconds = 0
+    last_touch_time = 0
+    main_sprite = game.create_sprite(2, 2)
+    goal_sprite = game.create_sprite(0, 0)
+    goal_sprite.set(LedSpriteProperty.BLINK, 500)
+    if level == 2:
+        enemy_sprite = game.create_sprite(4, 3)
+        enemy_sprite.set(LedSpriteProperty.BLINK, 100)
 def roll_around_sprite(s: game.LedSprite):
     global current_roll_in_degrees, current_pitch_in_degrees, aiming_quadrant, sprite_direction, force
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.ROLL))
@@ -63,41 +89,19 @@ sprite_direction = 0
 aiming_quadrant = ""
 current_pitch_in_degrees = 0
 current_roll_in_degrees = 0
+enemy_sprite: game.LedSprite = None
+touching_milliseconds_to_win = 0
+level = 0
 lean = 0
+touching_for_total_of_milliseconds = 0
+last_touch_time = 0
 goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
-last_touch_time = 0
-touching_for_total_of_milliseconds = 0
-touching_milliseconds_to_win = 0
-level = 1
-touching_milliseconds_to_win = 1000
-touching_for_total_of_milliseconds = 0
-last_touch_time = 0
-main_sprite = game.create_sprite(3, 1)
-goal_sprite = game.create_sprite(0, 0)
+restartgame()
 
 def on_forever():
     roll_around_sprite(main_sprite)
     determineTouching()
     determineLevelWin()
+    checkandhandleEnemytouch()
 basic.forever(on_forever)
-
-# Comment by John's dad:
-# 
-# Note that sprites will roll along edges when relative direction exceeds 45 current_pitch_in_degrees in effect simulating some degree of "wall friction". Thus there is no need to program specifically for edge cases. For example, this will not move when direction is set below 45 (but will at anything above that):
-# 
-# s = game.create_sprite(1, 0)
-# 
-# s.set(LedSpriteProperty.DIRECTION, 45)
-# 
-# s.move(4)
-# 
-# Note also that the only way to achieve local scope variables using blocks is to have them as python function parameters. Blocks will generate any others as globals
-
-def on_forever2():
-    global goal_sprite
-    basic.pause(800)
-    goal_sprite.delete()
-    basic.pause(800)
-    goal_sprite = game.create_sprite(0, 0)
-basic.forever(on_forever2)
