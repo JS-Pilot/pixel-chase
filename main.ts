@@ -1,3 +1,16 @@
+input.onButtonPressed(Button.A, function () {
+    control.reset()
+})
+function sanitize_lean (lean: number) {
+    if (Math.abs(lean) < 0.5) {
+        lean = 0
+    } else if (lean > 80) {
+        lean = 80
+    } else if (lean < -80) {
+        lean = -80
+    }
+    return lean
+}
 function determineQuadrant (current_roll_in_degrees: number, current_pitch_in_degrees: number) {
     let quadrant: string;
 if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
@@ -12,13 +25,16 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
     return quadrant
 }
 function roll_around_sprite (s: game.LedSprite) {
-    current_roll_in_degrees = input.rotation(Rotation.Roll)
-    current_pitch_in_degrees = input.rotation(Rotation.Pitch)
+    current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
+    current_pitch_in_degrees = sanitize_lean(input.rotation(Rotation.Pitch))
     aiming_quadrant = determineQuadrant(current_roll_in_degrees, current_pitch_in_degrees)
     sprite_direction = directionForQuadrant(Math.abs(current_roll_in_degrees), Math.abs(current_pitch_in_degrees), aiming_quadrant)
     main_sprite.set(LedSpriteProperty.Direction, sprite_direction)
-    main_sprite.move(1)
-    basic.pause(1000 - 3 * Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2))
+    force = Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2)
+    if (force > 0.5) {
+        main_sprite.move(1)
+        basic.pause(1000 - 6 * force)
+    }
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
@@ -35,10 +51,12 @@ angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
     return direction
 }
 let angle = 0
+let force = 0
 let sprite_direction = 0
 let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
+let lean = 0
 let main_sprite: game.LedSprite = null
 main_sprite = game.createSprite(3, 1)
 let goal_sprite = game.createSprite(0, 0)
