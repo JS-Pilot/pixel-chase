@@ -1,6 +1,14 @@
-input.onButtonPressed(Button.A, function () {
-    control.reset()
-})
+function determineTouching () {
+    if (main_sprite.isTouching(goal_sprite)) {
+        if (last_touch_time != 0) {
+            touching_for_total_of_milliseconds = control.millis() - last_touch_time + touching_for_total_of_milliseconds
+        }
+        last_touch_time = control.millis()
+    } else {
+        last_touch_time = 0
+        touching_for_total_of_milliseconds = 0
+    }
+}
 function sanitize_lean (lean: number) {
     if (Math.abs(lean) < 0.5) {
         lean = 0
@@ -10,6 +18,15 @@ function sanitize_lean (lean: number) {
         lean = -80
     }
     return lean
+}
+function determineLevelWin () {
+    if (touching_for_total_of_milliseconds >= touching_milliseconds_to_win) {
+        goal_sprite.delete()
+        main_sprite.set(LedSpriteProperty.Blink, 100)
+        level += 1
+        basic.pause(2000)
+        playLevel()
+    }
 }
 function determineQuadrant (current_roll_in_degrees: number, current_pitch_in_degrees: number) {
     let quadrant: string;
@@ -24,6 +41,14 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
     }
     return quadrant
 }
+function playLevel () {
+    touching_milliseconds_to_win = 1000
+    touching_for_total_of_milliseconds = 0
+    last_touch_time = 0
+    main_sprite = game.createSprite(3, 4)
+    goal_sprite = game.createSprite(0, 0)
+    goal_sprite.set(LedSpriteProperty.Blink, 500)
+}
 function roll_around_sprite (s: game.LedSprite) {
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
     current_pitch_in_degrees = sanitize_lean(input.rotation(Rotation.Pitch))
@@ -33,7 +58,7 @@ function roll_around_sprite (s: game.LedSprite) {
     force = Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2)
     if (force > 0.5) {
         main_sprite.move(1)
-        basic.pause(1000 - 6 * force)
+        basic.pause(500 - 5 * force)
     }
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
@@ -56,27 +81,16 @@ let sprite_direction = 0
 let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
+let touching_milliseconds_to_win = 0
 let lean = 0
+let touching_for_total_of_milliseconds = 0
+let last_touch_time = 0
+let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
-main_sprite = game.createSprite(3, 1)
-let goal_sprite = game.createSprite(0, 0)
+let level = 1
+playLevel()
 basic.forever(function () {
     roll_around_sprite(main_sprite)
-})
-// Comment by John's dad:
-// 
-// Note that sprites will roll along edges when relative direction exceeds 45 current_pitch_in_degrees in effect simulating some degree of "wall friction". Thus there is no need to program specifically for edge cases. For example, this will not move when direction is set below 45 (but will at anything above that):
-// 
-// s = game.create_sprite(1, 0)
-// 
-// s.set(LedSpriteProperty.DIRECTION, 45)
-// 
-// s.move(4)
-// 
-// Note also that the only way to achieve local scope variables using blocks is to have them as python function parameters. Blocks will generate any others as globals
-basic.forever(function () {
-    basic.pause(800)
-    goal_sprite.delete()
-    basic.pause(800)
-    goal_sprite = game.createSprite(0, 0)
+    determineTouching()
+    determineLevelWin()
 })

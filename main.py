@@ -1,7 +1,27 @@
-def on_button_pressed_a():
-    control.reset()
-input.on_button_pressed(Button.A, on_button_pressed_a)
-
+def determineTouching():
+    global touching_for_total_of_milliseconds, last_touch_time
+    if main_sprite.is_touching(goal_sprite):
+        if last_touch_time != 0:
+            touching_for_total_of_milliseconds = control.millis() - last_touch_time + touching_for_total_of_milliseconds
+        last_touch_time = control.millis()
+    else:
+        last_touch_time = 0
+        touching_for_total_of_milliseconds = 0
+def sanitize_lean(lean: number):
+    if abs(lean) < 0.5:
+        lean = 0
+    elif lean > 80:
+        lean = 80
+    elif lean < -80:
+        lean = -80
+    return lean
+def determineLevelWin():
+    global level
+    if touching_for_total_of_milliseconds >= touching_milliseconds_to_win:
+        goal_sprite.delete()
+        main_sprite.set(LedSpriteProperty.BLINK, 100)
+        level += 1
+        basic.pause(2000)
 def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
     if current_roll_in_degrees >= 0 and current_pitch_in_degrees <= 0:
         quadrant = "top_right"
@@ -12,14 +32,6 @@ def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees:
     else:
         quadrant = "top_left"
     return quadrant
-def sanitize_lean(lean:number):
-    if abs(lean) < 0.5:
-        lean = 0
-    elif lean > 80:
-        lean = 80
-    elif lean < -80:
-        lean = -80
-    return lean
 def roll_around_sprite(s: game.LedSprite):
     global current_roll_in_degrees, current_pitch_in_degrees, aiming_quadrant, sprite_direction, force
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.ROLL))
@@ -32,7 +44,7 @@ def roll_around_sprite(s: game.LedSprite):
     force = Math.sqrt(abs(current_roll_in_degrees) ** 2 + abs(current_pitch_in_degrees) ** 2)
     if force > 0.5:
         main_sprite.move(1)
-        basic.pause(1000 - 6 * force)
+        basic.pause(500 - 5 * force)
 def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_quadrant: str):
     global angle
     angle = Math.atan(absolute_roll / max(absolute_pitch, 0.001)) * 57.2958
@@ -51,12 +63,23 @@ sprite_direction = 0
 aiming_quadrant = ""
 current_pitch_in_degrees = 0
 current_roll_in_degrees = 0
+lean = 0
+goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
+last_touch_time = 0
+touching_for_total_of_milliseconds = 0
+touching_milliseconds_to_win = 0
+level = 1
+touching_milliseconds_to_win = 1000
+touching_for_total_of_milliseconds = 0
+last_touch_time = 0
 main_sprite = game.create_sprite(3, 1)
 goal_sprite = game.create_sprite(0, 0)
 
 def on_forever():
     roll_around_sprite(main_sprite)
+    determineTouching()
+    determineLevelWin()
 basic.forever(on_forever)
 
 # Comment by John's dad:
