@@ -4,6 +4,7 @@ def determineTouching():
         if last_touch_time != 0:
             touching_for_total_of_milliseconds = control.millis() - last_touch_time + touching_for_total_of_milliseconds
         last_touch_time = control.millis()
+        touching_for_total_of_milliseconds = 1000
     else:
         last_touch_time = 0
         touching_for_total_of_milliseconds = 0
@@ -18,7 +19,7 @@ def deleteEnemies():
         enemy_sprites.pop()
         index += 1
 def sanitize_lean(lean: number):
-    if abs(lean) < 0.5:
+    if abs(lean) < 10:
         lean = 0
     elif lean > 80:
         lean = 80
@@ -37,6 +38,8 @@ def determineLevelWin():
     if touching_for_total_of_milliseconds >= touching_milliseconds_to_win:
         goal_sprite.delete()
         main_sprite.set(LedSpriteProperty.BLINK, 100)
+        if level == max_game_level:
+            control.reset()
         level += 1
         basic.pause(2000)
         main_sprite.delete()

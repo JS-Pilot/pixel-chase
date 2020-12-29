@@ -4,6 +4,7 @@ function determineTouching () {
             touching_for_total_of_milliseconds = control.millis() - last_touch_time + touching_for_total_of_milliseconds
         }
         last_touch_time = control.millis()
+        touching_for_total_of_milliseconds = 1000
     } else {
         last_touch_time = 0
         touching_for_total_of_milliseconds = 0
@@ -22,7 +23,7 @@ index += 1
     }
 }
 function sanitize_lean (lean: number) {
-    if (Math.abs(lean) < 0.5) {
+    if (Math.abs(lean) < 10) {
         lean = 0
     } else if (lean > 80) {
         lean = 80
@@ -42,6 +43,16 @@ function determineLevelWin () {
     if (touching_for_total_of_milliseconds >= touching_milliseconds_to_win) {
         goal_sprite.delete()
         main_sprite.set(LedSpriteProperty.Blink, 100)
+        if (level == max_game_level) {
+            deleteEnemies()
+            goal_sprite.delete()
+            main_sprite.delete()
+            basic.showIcon(IconNames.Happy)
+            basic.pause(1000)
+            basic.showIcon(IconNames.Heart)
+            basic.pause(1000)
+            control.reset()
+        }
         level += 1
         basic.pause(2000)
         main_sprite.delete()
@@ -154,8 +165,9 @@ let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
 let main_sprite_starting_coordinates_by_level: number[][] = []
 let goal_sprite_starting_coordinates_by_level: number[][] = []
+let max_game_level = 0
 let enemy_sprites : game.LedSprite[] = []
-let max_game_level = 5
+max_game_level = 5
 let max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
