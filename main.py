@@ -7,6 +7,16 @@ def determineTouching():
     else:
         last_touch_time = 0
         touching_for_total_of_milliseconds = 0
+def deleteEnemies():
+    global index3, index
+    index3 = 0
+    while index3 <= len(enemy_sprites) - 1:
+        enemy_sprites[index3].delete()
+        index3 += 1
+    index = 0
+    while index <= len(enemy_sprites) - 1:
+        enemy_sprites.pop()
+        index += 1
 def sanitize_lean(lean: number):
     if abs(lean) < 0.5:
         lean = 0
@@ -16,14 +26,11 @@ def sanitize_lean(lean: number):
         lean = -80
     return lean
 def restartgame():
-    global level, index
+    global level
     level = 1
-    index = 0
-    while index <= max_enemy_sprites - 1:
-        enemy_sprites.remove_at(index)
-        index += 1
     goal_sprite.delete()
     main_sprite.delete()
+    deleteEnemies()
     playLevel()
 def determineLevelWin():
     global level
@@ -33,6 +40,7 @@ def determineLevelWin():
         level += 1
         basic.pause(2000)
         main_sprite.delete()
+        deleteEnemies()
         playLevel()
 def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
     if current_roll_in_degrees >= 0 and current_pitch_in_degrees <= 0:
@@ -45,17 +53,24 @@ def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees:
         quadrant = "top_left"
     return quadrant
 def checkandhandleEnemytouch():
-    if main_sprite.is_touching(enemy_sprite):
-        if main_sprite.get(LedSpriteProperty.Y) == 4:
-            main_sprite.set(LedSpriteProperty.Y, 0)
-        while main_sprite.get(LedSpriteProperty.Y) < 4:
-            main_sprite.set(LedSpriteProperty.DIRECTION, 180)
-            main_sprite.move(1)
-            basic.pause(300)
-        restartgame()
+    global index2
+    index2 = 0
+    while index2 <= len(enemy_sprites) - 1:
+        if main_sprite.is_touching(enemy_sprites[index2]):
+            if main_sprite.get(LedSpriteProperty.Y) == 4:
+                main_sprite.set(LedSpriteProperty.Y, 0)
+            while main_sprite.get(LedSpriteProperty.Y) < 4:
+                main_sprite.set(LedSpriteProperty.DIRECTION, 180)
+                main_sprite.move(1)
+                basic.pause(300)
+            images.icon_image(IconNames.SKULL).show_image(0)
+            basic.pause(500)
+            restartgame()
+            break
+        index2 += 1
 def playLevel():
     global touching_milliseconds_to_win, touching_for_total_of_milliseconds, last_touch_time, sprite_coordinates, main_sprite, goal_sprite, enemy_sprites_by_level, indexpl, enemy_sprite_coordinates, enemy_sprite
-    touching_milliseconds_to_win = 500
+    touching_milliseconds_to_win = 1
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
     sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
@@ -103,30 +118,32 @@ sprite_direction = 0
 aiming_quadrant = ""
 current_pitch_in_degrees = 0
 current_roll_in_degrees = 0
+enemy_sprite: game.LedSprite = None
 enemy_sprite_coordinates: List[number] = []
 indexpl = 0
 enemy_sprites_by_level: List[List[number]] = []
 sprite_coordinates: List[number] = []
-enemy_sprite: game.LedSprite = None
+index2 = 0
 touching_milliseconds_to_win = 0
-index = 0
 level = 0
 lean = 0
+index = 0
+index3 = 0
 touching_for_total_of_milliseconds = 0
 last_touch_time = 0
-enemy_sprites: List[game.LedSprite] = []
+index22 = 0
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
 main_sprite_starting_coordinates_by_level: List[List[number]] = []
 goal_sprite_starting_coordinates_by_level: List[List[number]] = []
-max_enemy_sprites = 0
+enemy_sprites: List[game.LedSprite] = []
 max_game_level = 5
 max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
-main_sprite = game.create_sprite(0, 0)
-goal_sprite = game.create_sprite(0, 0)
+main_sprite = game.create_sprite(0, 4)
+goal_sprite = game.create_sprite(4, 0)
 enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [9, 9],
         [9, 9],
@@ -177,10 +194,9 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
-index2 = 0
-while index2 <= max_enemy_sprites - 1:
-    enemy_sprites.append(game.create_sprite(0, 0))
-    index2 += 1
+while index22 <= max_enemy_sprites - 1:
+    enemy_sprites.append(game.create_sprite(0, 3))
+    index22 += 1
 restartgame()
 
 def on_forever():

@@ -9,6 +9,18 @@ function determineTouching () {
         touching_for_total_of_milliseconds = 0
     }
 }
+function deleteEnemies () {
+    index3 = 0
+    while (index3 <= enemy_sprites.length - 1) {
+        enemy_sprites[index3].delete()
+        index3 += 1
+    }
+    index = 0
+    while (index <= enemy_sprites.length - 1) {
+        _py.py_array_pop(enemy_sprites)
+index += 1
+    }
+}
 function sanitize_lean (lean: number) {
     if (Math.abs(lean) < 0.5) {
         lean = 0
@@ -21,13 +33,9 @@ function sanitize_lean (lean: number) {
 }
 function restartgame () {
     level = 1
-    index = 0
-    while (index <= max_enemy_sprites - 1) {
-        enemy_sprites.removeAt(index)
-        index += 1
-    }
     goal_sprite.delete()
     main_sprite.delete()
+    deleteEnemies()
     playLevel()
 }
 function determineLevelWin () {
@@ -37,6 +45,7 @@ function determineLevelWin () {
         level += 1
         basic.pause(2000)
         main_sprite.delete()
+        deleteEnemies()
         playLevel()
     }
 }
@@ -54,20 +63,27 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
     return quadrant
 }
 function checkandhandleEnemytouch () {
-    if (main_sprite.isTouching(enemy_sprite)) {
-        if (main_sprite.get(LedSpriteProperty.Y) == 4) {
-            main_sprite.set(LedSpriteProperty.Y, 0)
+    index2 = 0
+    while (index2 <= enemy_sprites.length - 1) {
+        if (main_sprite.isTouching(enemy_sprites[index2])) {
+            if (main_sprite.get(LedSpriteProperty.Y) == 4) {
+                main_sprite.set(LedSpriteProperty.Y, 0)
+            }
+            while (main_sprite.get(LedSpriteProperty.Y) < 4) {
+                main_sprite.set(LedSpriteProperty.Direction, 180)
+                main_sprite.move(1)
+                basic.pause(300)
+            }
+            images.iconImage(IconNames.Skull).showImage(0)
+            basic.pause(500)
+            restartgame()
+            break;
         }
-        while (main_sprite.get(LedSpriteProperty.Y) < 4) {
-            main_sprite.set(LedSpriteProperty.Direction, 180)
-            main_sprite.move(1)
-            basic.pause(300)
-        }
-        restartgame()
+        index2 += 1
     }
 }
 function playLevel () {
-    touching_milliseconds_to_win = 500
+    touching_milliseconds_to_win = 1
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
     sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
@@ -119,35 +135,36 @@ let sprite_direction = 0
 let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
+let enemy_sprite: game.LedSprite = null
 let enemy_sprite_coordinates: number[] = []
 let indexpl = 0
 let enemy_sprites_by_level: number[][] = []
 let sprite_coordinates: number[] = []
-let enemy_sprite: game.LedSprite = null
+let index2 = 0
 let touching_milliseconds_to_win = 0
-let index = 0
 let level = 0
 let lean = 0
+let index = 0
+let index3 = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
-let enemy_sprites: game.LedSprite[] = []
+let index22 = 0
 let enemy_sprites_starting_coordinates_by_level: number[][][] = []
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
 let main_sprite_starting_coordinates_by_level: number[][] = []
 let goal_sprite_starting_coordinates_by_level: number[][] = []
-let max_enemy_sprites = 0
+let enemy_sprites : game.LedSprite[] = []
 let max_game_level = 5
-max_enemy_sprites = 10
+let max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
-main_sprite = game.createSprite(0, 0)
-goal_sprite = game.createSprite(0, 0)
+main_sprite = game.createSprite(0, 4)
+goal_sprite = game.createSprite(4, 0)
 enemy_sprites_starting_coordinates_by_level = [[[9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[3, 4], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]], [[4, 1], [3, 2], [2, 3], [1, 4], [3, 0], [2, 1], [1, 2], [0, 3], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]]]
-let index2 = 0
-while (index2 <= max_enemy_sprites - 1) {
-    enemy_sprites.push(game.createSprite(0, 0))
-    index2 += 1
+while (index22 <= max_enemy_sprites - 1) {
+    enemy_sprites.push(game.createSprite(0, 3))
+    index22 += 1
 }
 restartgame()
 basic.forever(function () {
