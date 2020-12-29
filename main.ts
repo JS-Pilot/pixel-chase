@@ -10,16 +10,37 @@ function determineTouching () {
         touching_for_total_of_milliseconds = 0
     }
 }
-function deleteEnemies () {
-    index3 = 0
-    while (index3 <= enemy_sprites.length - 1) {
-        enemy_sprites[index3].delete()
-        index3 += 1
+function pickRandomDirection () {
+    Random_Value = randint(1, 8)
+    if (Random_Value == 1) {
+        randomDirection = 0
+    } else if (Random_Value == 2) {
+        randomDirection = 45
+    } else if (Random_Value == 3) {
+        randomDirection = 90
+    } else if (Random_Value == 4) {
+        randomDirection = 135
+    } else if (Random_Value == 5) {
+        randomDirection = 180
+    } else if (Random_Value == 6) {
+        randomDirection = 225
+    } else if (Random_Value == 7) {
+        randomDirection = 270
+    } else if (Random_Value == 8) {
+        randomDirection = 315
     }
-    index = 0
-    while (index <= enemy_sprites.length - 1) {
+    return randomDirection
+}
+function deleteEnemies () {
+    index_esprites = 0
+    while (index_esprites <= enemy_sprites.length - 1) {
+        enemy_sprites[index_esprites].delete()
+        index_esprites += 1
+    }
+    index_esprites_del = 0
+    while (index_esprites_del <= index_esprites - 1) {
         _py.py_array_pop(enemy_sprites)
-index += 1
+index_esprites_del += 1
     }
 }
 function sanitize_lean (lean: number) {
@@ -140,6 +161,26 @@ angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
     }
     return direction
 }
+function move_enemies () {
+    let level_coordinates: number[][];
+index_mv = 0
+    while (index_mv <= enemy_sprites.length - 1) {
+        enemy_sprite = enemy_sprites[index_mv]
+        level_coordinates = enemy_sprites_starting_coordinates_by_level[level - 1]
+        es_level_coordinates = level_coordinates[index_mv]
+        if (es_level_coordinates[0] != enemy_sprite.get(LedSpriteProperty.X) || es_level_coordinates[1] != enemy_sprite.get(LedSpriteProperty.Y)) {
+            enemy_sprite.set(LedSpriteProperty.X, es_level_coordinates[0])
+            enemy_sprite.set(LedSpriteProperty.Y, es_level_coordinates[1])
+        } else {
+            enemy_sprite.set(LedSpriteProperty.Direction, pickRandomDirection())
+            enemy_sprite.move(1)
+        }
+        index_mv += 1
+    }
+    basic.pause(520)
+}
+let es_level_coordinates: number[] = []
+let index_mv = 0
 let angle = 0
 let force = 0
 let sprite_direction = 0
@@ -155,8 +196,10 @@ let index2 = 0
 let touching_milliseconds_to_win = 0
 let level = 0
 let lean = 0
-let index = 0
-let index3 = 0
+let index_esprites_del = 0
+let index_esprites = 0
+let randomDirection = 0
+let Random_Value = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
 let index22 = 0
@@ -166,6 +209,7 @@ let main_sprite: game.LedSprite = null
 let main_sprite_starting_coordinates_by_level: number[][] = []
 let goal_sprite_starting_coordinates_by_level: number[][] = []
 let max_game_level = 0
+let index = 0
 let enemy_sprites : game.LedSprite[] = []
 max_game_level = 5
 let max_enemy_sprites = 10
@@ -179,6 +223,11 @@ while (index22 <= max_enemy_sprites - 1) {
     index22 += 1
 }
 restartgame()
+basic.forever(function () {
+    if (level == max_game_level) {
+        move_enemies()
+    }
+})
 basic.forever(function () {
     roll_around_sprite(main_sprite)
     determineTouching()

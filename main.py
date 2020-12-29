@@ -8,16 +8,36 @@ def determineTouching():
     else:
         last_touch_time = 0
         touching_for_total_of_milliseconds = 0
+def pickRandomDirection():
+    global Random_Value, randomDirection
+    Random_Value = randint(1, 8)
+    if Random_Value == 1:
+        randomDirection = 0
+    elif Random_Value == 2:
+        randomDirection = 45
+    elif Random_Value == 3:
+        randomDirection = 90
+    elif Random_Value == 4:
+        randomDirection = 135
+    elif Random_Value == 5:
+        randomDirection = 180
+    elif Random_Value == 6:
+        randomDirection = 225
+    elif Random_Value == 7:
+        randomDirection = 270
+    elif Random_Value == 8:
+        randomDirection = 315
+    return randomDirection
 def deleteEnemies():
-    global index3, index
-    index3 = 0
-    while index3 <= len(enemy_sprites) - 1:
-        enemy_sprites[index3].delete()
-        index3 += 1
-    index = 0
-    while index <= len(enemy_sprites) - 1:
+    global index_esprites, index_esprites_del
+    index_esprites = 0
+    while index_esprites <= len(enemy_sprites) - 1:
+        enemy_sprites[index_esprites].delete()
+        index_esprites += 1
+    index_esprites_del = 0
+    while index_esprites_del <= index_esprites - 1:
         enemy_sprites.pop()
-        index += 1
+        index_esprites_del += 1
 def sanitize_lean(lean: number):
     if abs(lean) < 10:
         lean = 0
@@ -39,6 +59,13 @@ def determineLevelWin():
         goal_sprite.delete()
         main_sprite.set(LedSpriteProperty.BLINK, 100)
         if level == max_game_level:
+            deleteEnemies()
+            goal_sprite.delete()
+            main_sprite.delete()
+            basic.show_icon(IconNames.HAPPY)
+            basic.pause(1000)
+            basic.show_icon(IconNames.HEART)
+            basic.pause(1000)
             control.reset()
         level += 1
         basic.pause(2000)
@@ -115,6 +142,23 @@ def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_q
     else:
         direction = angle + 270
     return direction
+def move_enemies():
+    global index_mv, enemy_sprite, es_level_coordinates
+    index_mv = 0
+    while index_mv <= len(enemy_sprites) - 1:
+        enemy_sprite = enemy_sprites[index_mv]
+        level_coordinates = enemy_sprites_starting_coordinates_by_level[level - 1]
+        es_level_coordinates = level_coordinates[index_mv]
+        if es_level_coordinates[0] != enemy_sprite.get(LedSpriteProperty.X) or es_level_coordinates[1] != enemy_sprite.get(LedSpriteProperty.Y):
+            enemy_sprite.set(LedSpriteProperty.X, es_level_coordinates[0])
+            enemy_sprite.set(LedSpriteProperty.Y, es_level_coordinates[1])
+        else:
+            enemy_sprite.set(LedSpriteProperty.DIRECTION, pickRandomDirection())
+            enemy_sprite.move(1)
+        index_mv += 1
+    basic.pause(520)
+es_level_coordinates: List[number] = []
+index_mv = 0
 angle = 0
 force = 0
 sprite_direction = 0
@@ -130,8 +174,10 @@ index2 = 0
 touching_milliseconds_to_win = 0
 level = 0
 lean = 0
-index = 0
-index3 = 0
+index_esprites_del = 0
+index_esprites = 0
+randomDirection = 0
+Random_Value = 0
 touching_for_total_of_milliseconds = 0
 last_touch_time = 0
 index22 = 0
@@ -140,7 +186,9 @@ goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
 main_sprite_starting_coordinates_by_level: List[List[number]] = []
 goal_sprite_starting_coordinates_by_level: List[List[number]] = []
+max_game_level = 0
 enemy_sprites: List[game.LedSprite] = []
+index = 0
 max_game_level = 5
 max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
@@ -203,8 +251,13 @@ while index22 <= max_enemy_sprites - 1:
 restartgame()
 
 def on_forever():
+    if level == max_game_level:
+        move_enemies()
+basic.forever(on_forever)
+
+def on_forever2():
     roll_around_sprite(main_sprite)
     determineTouching()
     determineLevelWin()
     checkandhandleEnemytouch()
-basic.forever(on_forever)
+basic.forever(on_forever2)
