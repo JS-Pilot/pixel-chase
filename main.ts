@@ -66,8 +66,10 @@ function playLevel () {
     touching_milliseconds_to_win = 500
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
-    main_sprite = game.createSprite(2, 2)
-    goal_sprite = game.createSprite(0, 0)
+    sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
+    main_sprite = game.createSprite(sprite_coordinates[0], sprite_coordinates[1])
+    sprite_coordinates = goal_sprite_starting_coordinates_by_level[level - 1]
+    goal_sprite = game.createSprite(sprite_coordinates[0], sprite_coordinates[1])
     goal_sprite.set(LedSpriteProperty.Blink, 500)
     if (level == 2) {
         enemy_sprite = game.createSprite(3, 4)
@@ -106,6 +108,7 @@ let sprite_direction = 0
 let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
+let sprite_coordinates: number[] = []
 let touching_milliseconds_to_win = 0
 let level = 0
 let lean = 0
@@ -114,6 +117,10 @@ let last_touch_time = 0
 let enemy_sprite: game.LedSprite = null
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
+let main_sprite_starting_coordinates_by_level: number[][] = []
+let goal_sprite_starting_coordinates_by_level: number[][] = []
+goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
+main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
 main_sprite = game.createSprite(0, 0)
 goal_sprite = game.createSprite(0, 0)
 enemy_sprite = game.createSprite(0, 0)

@@ -18,6 +18,9 @@ def sanitize_lean(lean: number):
 def restartgame():
     global level
     level = 1
+    enemy_sprite.delete()
+    goal_sprite.delete()
+    main_sprite.delete()
     playLevel()
 def determineLevelWin():
     global level
@@ -48,16 +51,17 @@ def checkandhandleEnemytouch():
             basic.pause(300)
         restartgame()
 def playLevel():
-    global touching_milliseconds_to_win, touching_for_total_of_milliseconds, last_touch_time, main_sprite, goal_sprite, enemy_sprite
+    global touching_milliseconds_to_win, touching_for_total_of_milliseconds, last_touch_time, sprite_coordinates, main_sprite, goal_sprite, enemy_sprite
     touching_milliseconds_to_win = 500
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
-    main_sprite = game.create_sprite(2, 2)
+    sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
+    main_sprite = game.create_sprite(sprite_coordinates[0], sprite_coordinates[1])
     goal_sprite = game.create_sprite(0, 0)
     goal_sprite.set(LedSpriteProperty.BLINK, 500)
     if level == 2:
-        enemy_sprite = game.create_sprite(4, 3)
-        enemy_sprite.set(LedSpriteProperty.BLINK, 100)
+        enemy_sprite = game.create_sprite(3, 4)
+        enemy_sprite.set(LedSpriteProperty.BLINK, 50)
 def roll_around_sprite(s: game.LedSprite):
     global current_roll_in_degrees, current_pitch_in_degrees, aiming_quadrant, sprite_direction, force
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.ROLL))
@@ -89,14 +93,22 @@ sprite_direction = 0
 aiming_quadrant = ""
 current_pitch_in_degrees = 0
 current_roll_in_degrees = 0
-enemy_sprite: game.LedSprite = None
+sprite_coordinates: List[number] = []
 touching_milliseconds_to_win = 0
 level = 0
 lean = 0
 touching_for_total_of_milliseconds = 0
 last_touch_time = 0
+enemy_sprite: game.LedSprite = None
 goal_sprite: game.LedSprite = None
+goal_sprite_starting_coordinates_by_level: List[List[number]] = []
+goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite: game.LedSprite = None
+main_sprite_starting_coordinates_by_level: List[List[number]] = []
+main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
+main_sprite = game.create_sprite(0, 0)
+goal_sprite = game.create_sprite(0, 0)
+enemy_sprite = game.create_sprite(0, 0)
 restartgame()
 
 def on_forever():
