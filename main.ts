@@ -21,7 +21,11 @@ function sanitize_lean (lean: number) {
 }
 function restartgame () {
     level = 1
-    enemy_sprite.delete()
+    index = 0
+    while (index <= max_enemy_sprites - 1) {
+        enemy_sprites.removeAt(index)
+        index += 1
+    }
     goal_sprite.delete()
     main_sprite.delete()
     playLevel()
@@ -71,9 +75,16 @@ function playLevel () {
     sprite_coordinates = goal_sprite_starting_coordinates_by_level[level - 1]
     goal_sprite = game.createSprite(sprite_coordinates[0], sprite_coordinates[1])
     goal_sprite.set(LedSpriteProperty.Blink, 500)
-    if (level == 2) {
-        enemy_sprite = game.createSprite(3, 4)
-        enemy_sprite.set(LedSpriteProperty.Blink, 50)
+    enemy_sprites_by_level = enemy_sprites_starting_coordinates_by_level[level - 1]
+    indexpl = 0
+    while (indexpl <= enemy_sprites_by_level.length - 1) {
+        enemy_sprite_coordinates = enemy_sprites_by_level[indexpl]
+        if (enemy_sprite_coordinates[0] != 9) {
+            enemy_sprite = game.createSprite(enemy_sprite_coordinates[0], enemy_sprite_coordinates[1])
+            enemy_sprite.set(LedSpriteProperty.Blink, 50)
+            enemy_sprites.push(enemy_sprite)
+        }
+        indexpl += 1
     }
 }
 function roll_around_sprite (s: game.LedSprite) {
@@ -108,22 +119,36 @@ let sprite_direction = 0
 let aiming_quadrant = ""
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
+let enemy_sprite_coordinates: number[] = []
+let indexpl = 0
+let enemy_sprites_by_level: number[][] = []
 let sprite_coordinates: number[] = []
+let enemy_sprite: game.LedSprite = null
 let touching_milliseconds_to_win = 0
+let index = 0
 let level = 0
 let lean = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
-let enemy_sprite: game.LedSprite = null
+let enemy_sprites: game.LedSprite[] = []
+let enemy_sprites_starting_coordinates_by_level: number[][][] = []
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
 let main_sprite_starting_coordinates_by_level: number[][] = []
 let goal_sprite_starting_coordinates_by_level: number[][] = []
+let max_enemy_sprites = 0
+let max_game_level = 5
+max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
 main_sprite = game.createSprite(0, 0)
 goal_sprite = game.createSprite(0, 0)
-enemy_sprite = game.createSprite(0, 0)
+enemy_sprites_starting_coordinates_by_level = [[[9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[3, 4], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]], [[4, 1], [3, 2], [2, 3], [1, 4], [3, 0], [2, 1], [1, 2], [0, 3], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]]]
+let index2 = 0
+while (index2 <= max_enemy_sprites - 1) {
+    enemy_sprites.push(game.createSprite(0, 0))
+    index2 += 1
+}
 restartgame()
 basic.forever(function () {
     roll_around_sprite(main_sprite)
