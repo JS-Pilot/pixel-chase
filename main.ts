@@ -1,3 +1,8 @@
+touchbit.on(touchbit.TouchPad.b, touchbit.TouchEvent.pressed, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(3)
+    }
+})
 function determineTouching () {
     if (main_sprite.isTouching(goal_sprite)) {
         if (last_touch_time != 0) {
@@ -31,6 +36,28 @@ function pickRandomDirection () {
     }
     return randomDirection
 }
+function check_for_maxlevel_win () {
+    if (level != max_game_level) {
+        return false
+    }
+    deleteEnemies()
+    goal_sprite.delete()
+    main_sprite.delete()
+    easter_egg_is_possible = true
+    basic.showIcon(IconNames.Happy, 1000)
+basic.pause(1000)
+    basic.showIcon(IconNames.Heart, 1000)
+basic.pause(1000)
+    basic.clearScreen()
+    if (show_easter_egg == true) {
+        basic.showArrow(ArrowNames.North)
+        basic.pause(2000)
+        control.reset()
+    } else {
+        control.reset()
+    }
+    return true
+}
 function deleteEnemies () {
     index_esprites = 0
     while (index_esprites <= enemy_sprites.length - 1) {
@@ -53,7 +80,15 @@ function sanitize_lean (lean: number) {
     }
     return lean
 }
+touchbit.on(touchbit.TouchPad.d, touchbit.TouchEvent.pressed, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(1)
+    }
+})
 function restartgame () {
+    show_easter_egg = false
+    entered_easter_egg_code = []
+    easter_egg_is_possible = false
     level = 1
     goal_sprite.delete()
     main_sprite.delete()
@@ -61,25 +96,18 @@ function restartgame () {
     playLevel()
 }
 function determineLevelWin () {
-    if (touching_for_total_of_milliseconds >= touching_milliseconds_to_win) {
-        goal_sprite.delete()
-        main_sprite.set(LedSpriteProperty.Blink, 100)
-        if (level == max_game_level) {
-            deleteEnemies()
-            goal_sprite.delete()
-            main_sprite.delete()
-            basic.showIcon(IconNames.Happy)
-            basic.pause(1000)
-            basic.showIcon(IconNames.Heart)
-            basic.pause(1000)
-            control.reset()
-        }
-        level += 1
-        basic.pause(2000)
-        main_sprite.delete()
-        deleteEnemies()
-        playLevel()
+    if (touching_for_total_of_milliseconds < touching_milliseconds_to_win) {
+        return false
     }
+    goal_sprite.delete()
+    main_sprite.set(LedSpriteProperty.Blink, 100)
+    level += 1
+    basic.pause(2000)
+    main_sprite.delete()
+    check_for_maxlevel_win()
+    deleteEnemies()
+    playLevel()
+    return true
 }
 function determineQuadrant (current_roll_in_degrees: number, current_pitch_in_degrees: number) {
     let quadrant: string;
@@ -95,9 +123,9 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
     return quadrant
 }
 function checkandhandleEnemytouch () {
-    index2 = 0
-    while (index2 <= enemy_sprites.length - 1) {
-        if (main_sprite.isTouching(enemy_sprites[index2])) {
+    index_enemies = 0
+    while (index_enemies <= enemy_sprites.length - 1) {
+        if (main_sprite.isTouching(enemy_sprites[index_enemies])) {
             if (main_sprite.get(LedSpriteProperty.Y) == 4) {
                 main_sprite.set(LedSpriteProperty.Y, 0)
             }
@@ -111,9 +139,14 @@ function checkandhandleEnemytouch () {
             restartgame()
             break;
         }
-        index2 += 1
+        index_enemies += 1
     }
 }
+touchbit.on(touchbit.TouchPad.c, touchbit.TouchEvent.pressed, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(4)
+    }
+})
 function playLevel () {
     touching_milliseconds_to_win = 1
     touching_for_total_of_milliseconds = 0
@@ -135,6 +168,11 @@ function playLevel () {
         indexpl += 1
     }
 }
+touchbit.on(touchbit.TouchPad.a, touchbit.TouchEvent.pressed, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(2)
+    }
+})
 function roll_around_sprite (s: game.LedSprite) {
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
     current_pitch_in_degrees = sanitize_lean(input.rotation(Rotation.Pitch))
@@ -146,6 +184,15 @@ function roll_around_sprite (s: game.LedSprite) {
         main_sprite.move(1)
         basic.pause(500 - 5 * force)
     }
+}
+function update_and_check_easter_egg_code (easter_egg_code_part: number) {
+    entered_easter_egg_code.push(easter_egg_code_part)
+    if (entered_easter_egg_code == correct_easter_egg_code) {
+        return true
+    } else if (entered_easter_egg_code.length == correct_easter_egg_code.length) {
+        return false
+    }
+    return false
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
@@ -192,25 +239,31 @@ let enemy_sprite_coordinates: number[] = []
 let indexpl = 0
 let enemy_sprites_by_level: number[][] = []
 let sprite_coordinates: number[] = []
-let index2 = 0
+let index_enemies = 0
 let touching_milliseconds_to_win = 0
-let level = 0
 let lean = 0
 let index_esprites_del = 0
 let index_esprites = 0
+let level = 0
 let randomDirection = 0
 let Random_Value = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
-let index22 = 0
+let easter_egg_is_possible = false
+let index_max_enemies = 0
 let enemy_sprites_starting_coordinates_by_level: number[][][] = []
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
 let main_sprite_starting_coordinates_by_level: number[][] = []
 let goal_sprite_starting_coordinates_by_level: number[][] = []
 let max_game_level = 0
-let index = 0
+let entered_easter_egg_code: number[] = []
+let correct_easter_egg_code: number[] = []
+let show_easter_egg = false
 let enemy_sprites : game.LedSprite[] = []
+show_easter_egg = false
+correct_easter_egg_code = [1, 2, 3, 4]
+entered_easter_egg_code = []
 max_game_level = 5
 let max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
@@ -218,19 +271,19 @@ main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2,
 main_sprite = game.createSprite(0, 4)
 goal_sprite = game.createSprite(4, 0)
 enemy_sprites_starting_coordinates_by_level = [[[9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[3, 4], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]], [[4, 1], [3, 2], [2, 3], [1, 4], [3, 0], [2, 1], [1, 2], [0, 3], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]]]
-while (index22 <= max_enemy_sprites - 1) {
+while (index_max_enemies <= max_enemy_sprites - 1) {
     enemy_sprites.push(game.createSprite(0, 3))
-    index22 += 1
+    index_max_enemies += 1
 }
 restartgame()
-basic.forever(function () {
-    if (level == max_game_level) {
-        move_enemies()
-    }
-})
 basic.forever(function () {
     roll_around_sprite(main_sprite)
     determineTouching()
     determineLevelWin()
     checkandhandleEnemytouch()
+})
+basic.forever(function () {
+    if (level == max_game_level) {
+        move_enemies()
+    }
 })
