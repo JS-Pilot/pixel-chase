@@ -1,8 +1,3 @@
-touchbit.on(touchbit.TouchPad.b, touchbit.TouchEvent.pressed, function () {
-    if (easter_egg_is_possible == true) {
-        show_easter_egg = update_and_check_easter_egg_code(3)
-    }
-})
 function determineTouching () {
     if (main_sprite.isTouching(goal_sprite)) {
         if (last_touch_time != 0) {
@@ -47,7 +42,7 @@ function check_for_maxlevel_win () {
     basic.showIcon(IconNames.Happy, 1000)
 basic.pause(1000)
     basic.showIcon(IconNames.Heart, 1000)
-basic.pause(1000)
+basic.pause(5000)
     basic.clearScreen()
     if (show_easter_egg == true) {
         basic.showArrow(ArrowNames.North)
@@ -58,6 +53,11 @@ basic.pause(1000)
     }
     return true
 }
+input.onButtonPressed(Button.A, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(1)
+    }
+})
 function deleteEnemies () {
     index_esprites = 0
     while (index_esprites <= enemy_sprites.length - 1) {
@@ -80,11 +80,6 @@ function sanitize_lean (lean: number) {
     }
     return lean
 }
-touchbit.on(touchbit.TouchPad.d, touchbit.TouchEvent.pressed, function () {
-    if (easter_egg_is_possible == true) {
-        show_easter_egg = update_and_check_easter_egg_code(1)
-    }
-})
 function restartgame () {
     show_easter_egg = false
     entered_easter_egg_code = []
@@ -142,9 +137,14 @@ function checkandhandleEnemytouch () {
         index_enemies += 1
     }
 }
-touchbit.on(touchbit.TouchPad.c, touchbit.TouchEvent.pressed, function () {
+input.onButtonPressed(Button.AB, function () {
     if (easter_egg_is_possible == true) {
-        show_easter_egg = update_and_check_easter_egg_code(4)
+        show_easter_egg = update_and_check_easter_egg_code(3)
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    if (easter_egg_is_possible == true) {
+        show_easter_egg = update_and_check_easter_egg_code(2)
     }
 })
 function playLevel () {
@@ -168,11 +168,6 @@ function playLevel () {
         indexpl += 1
     }
 }
-touchbit.on(touchbit.TouchPad.a, touchbit.TouchEvent.pressed, function () {
-    if (easter_egg_is_possible == true) {
-        show_easter_egg = update_and_check_easter_egg_code(2)
-    }
-})
 function roll_around_sprite (s: game.LedSprite) {
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
     current_pitch_in_degrees = sanitize_lean(input.rotation(Rotation.Pitch))
@@ -244,12 +239,12 @@ let touching_milliseconds_to_win = 0
 let lean = 0
 let index_esprites_del = 0
 let index_esprites = 0
+let easter_egg_is_possible = false
 let level = 0
 let randomDirection = 0
 let Random_Value = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
-let easter_egg_is_possible = false
 let index_max_enemies = 0
 let enemy_sprites_starting_coordinates_by_level: number[][][] = []
 let goal_sprite: game.LedSprite = null
@@ -262,7 +257,7 @@ let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
 let enemy_sprites : game.LedSprite[] = []
 show_easter_egg = false
-correct_easter_egg_code = [1, 2, 3, 4]
+correct_easter_egg_code = [1, 2, 3, 2, 1]
 entered_easter_egg_code = []
 max_game_level = 5
 let max_enemy_sprites = 10
