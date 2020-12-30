@@ -42,12 +42,11 @@ function check_for_maxlevel_win () {
     basic.showIcon(IconNames.Happy, 1000)
 basic.pause(1000)
     basic.showIcon(IconNames.Heart, 1000)
-basic.pause(5000)
+basic.pause(1000)
     basic.clearScreen()
     if (show_easter_egg == true) {
-        basic.showArrow(ArrowNames.North)
-        basic.pause(2000)
-        control.reset()
+        basic.showArrow(ArrowNames.North, 5000)
+control.reset()
     } else {
         control.reset()
     }
@@ -96,11 +95,11 @@ function determineLevelWin () {
     }
     goal_sprite.delete()
     main_sprite.set(LedSpriteProperty.Blink, 100)
-    level += 1
     basic.pause(2000)
     main_sprite.delete()
     check_for_maxlevel_win()
     deleteEnemies()
+    level += 1
     playLevel()
     return true
 }
@@ -185,7 +184,7 @@ function update_and_check_easter_egg_code (easter_egg_code_part: number) {
     if (entered_easter_egg_code == correct_easter_egg_code) {
         return true
     } else if (entered_easter_egg_code.length == correct_easter_egg_code.length) {
-        return false
+        return true
     }
     return false
 }
@@ -257,7 +256,7 @@ let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
 let enemy_sprites : game.LedSprite[] = []
 show_easter_egg = false
-correct_easter_egg_code = [1, 2, 3, 2, 1]
+correct_easter_egg_code = [2, 3]
 entered_easter_egg_code = []
 max_game_level = 5
 let max_enemy_sprites = 10

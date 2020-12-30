@@ -1,11 +1,3 @@
-def my_function():
-    global easter_egg_code_part
-    if easter_egg_is_possible == True:
-        easter_egg_code_part = 3
-touchbit.on(touchbit.TouchPad.B,
-    touchbit.TouchEvent.PRESSED,
-    my_function)
-
 def determineTouching():
     global touching_for_total_of_milliseconds, last_touch_time
     if main_sprite.is_touching(goal_sprite):
@@ -48,8 +40,20 @@ def check_for_maxlevel_win():
     basic.pause(1000)
     basic.show_icon(IconNames.HEART, 1000)
     basic.pause(1000)
-    control.reset()
+    basic.clear_screen()
+    if show_easter_egg == True:
+        basic.show_arrow(ArrowNames.NORTH,5000)
+        control.reset()
+    else:
+        control.reset()
     return True
+
+def on_button_pressed_a():
+    global show_easter_egg
+    if easter_egg_is_possible == True:
+        show_easter_egg = update_and_check_easter_egg_code(1)
+input.on_button_pressed(Button.A, on_button_pressed_a)
+
 def deleteEnemies():
     global index_esprites, index_esprites_del
     index_esprites = 0
@@ -68,15 +72,6 @@ def sanitize_lean(lean: number):
     elif lean < -80:
         lean = -80
     return lean
-
-def my_function2():
-    global easter_egg_code_part
-    if easter_egg_is_possible == True:
-        easter_egg_code_part = 1
-touchbit.on(touchbit.TouchPad.D,
-    touchbit.TouchEvent.PRESSED,
-    my_function2)
-
 def restartgame():
     global show_easter_egg, entered_easter_egg_code, easter_egg_is_possible, level
     show_easter_egg = False
@@ -93,11 +88,11 @@ def determineLevelWin():
         return False
     goal_sprite.delete()
     main_sprite.set(LedSpriteProperty.BLINK, 100)
-    level += 1
     basic.pause(2000)
     main_sprite.delete()
     check_for_maxlevel_win()
     deleteEnemies()
+    level += 1
     playLevel()
     return True
 def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
@@ -127,13 +122,17 @@ def checkandhandleEnemytouch():
             break
         index_enemies += 1
 
-def my_function3():
-    global easter_egg_code_part
+def on_button_pressed_ab():
+    global show_easter_egg
     if easter_egg_is_possible == True:
-        easter_egg_code_part = 4
-touchbit.on(touchbit.TouchPad.C,
-    touchbit.TouchEvent.PRESSED,
-    my_function3)
+        show_easter_egg = update_and_check_easter_egg_code(3)
+input.on_button_pressed(Button.AB, on_button_pressed_ab)
+
+def on_button_pressed_b():
+    global show_easter_egg
+    if easter_egg_is_possible == True:
+        show_easter_egg = update_and_check_easter_egg_code(2)
+input.on_button_pressed(Button.B, on_button_pressed_b)
 
 def playLevel():
     global touching_milliseconds_to_win, touching_for_total_of_milliseconds, last_touch_time, sprite_coordinates, main_sprite, goal_sprite, enemy_sprites_by_level, indexpl, enemy_sprite_coordinates, enemy_sprite
@@ -154,16 +153,6 @@ def playLevel():
             enemy_sprite.set(LedSpriteProperty.BLINK, 50)
             enemy_sprites.append(enemy_sprite)
         indexpl += 1
-
-def my_function4():
-    global easter_egg_code_part, show_easter_egg
-    if easter_egg_is_possible == True:
-        easter_egg_code_part = 2
-        show_easter_egg = update_and_check_easter_egg_code()
-touchbit.on(touchbit.TouchPad.A,
-    touchbit.TouchEvent.PRESSED,
-    my_function4)
-
 def roll_around_sprite(s: game.LedSprite):
     global current_roll_in_degrees, current_pitch_in_degrees, aiming_quadrant, sprite_direction, force
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.ROLL))
@@ -177,11 +166,12 @@ def roll_around_sprite(s: game.LedSprite):
     if force > 0.5:
         main_sprite.move(1)
         basic.pause(500 - 5 * force)
-def update_and_check_easter_egg_code():
+def update_and_check_easter_egg_code(easter_egg_code_part: number):
+    entered_easter_egg_code.append(easter_egg_code_part)
     if entered_easter_egg_code == correct_easter_egg_code:
         return True
     elif len(entered_easter_egg_code) == len(correct_easter_egg_code):
-        return False
+        return True
     return False
 def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_quadrant: str):
     global angle
@@ -228,13 +218,12 @@ touching_milliseconds_to_win = 0
 lean = 0
 index_esprites_del = 0
 index_esprites = 0
+easter_egg_is_possible = False
 level = 0
 randomDirection = 0
 Random_Value = 0
 touching_for_total_of_milliseconds = 0
 last_touch_time = 0
-easter_egg_code_part = 0
-easter_egg_is_possible = False
 index_max_enemies = 0
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
@@ -247,7 +236,7 @@ correct_easter_egg_code: List[number] = []
 show_easter_egg = False
 enemy_sprites: List[game.LedSprite] = []
 show_easter_egg = False
-correct_easter_egg_code = [1, 2, 3, 4]
+correct_easter_egg_code = [2, 3]
 entered_easter_egg_code = []
 max_game_level = 5
 max_enemy_sprites = 10
