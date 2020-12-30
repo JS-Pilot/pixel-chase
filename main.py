@@ -42,7 +42,7 @@ def check_for_maxlevel_win():
     basic.pause(1000)
     basic.clear_screen()
     if show_easter_egg == True:
-        basic.show_arrow(ArrowNames.NORTH,5000)
+        basic.show_arrow(ArrowNames.NORTH, 5000)
         control.reset()
     else:
         control.reset()
@@ -167,10 +167,17 @@ def roll_around_sprite(s: game.LedSprite):
         main_sprite.move(1)
         basic.pause(500 - 5 * force)
 def update_and_check_easter_egg_code(easter_egg_code_part: number):
+    global index_array
     entered_easter_egg_code.append(easter_egg_code_part)
-    if entered_easter_egg_code == correct_easter_egg_code:
-        return True
-    elif len(entered_easter_egg_code) == len(correct_easter_egg_code):
+    # array equality not working
+    # if entered_easter_egg_code == correct_easter_egg_code:
+    # return True
+    if len(entered_easter_egg_code) == len(correct_easter_egg_code):
+        index_array = 0
+        while index_array < len(correct_easter_egg_code):
+            if entered_easter_egg_code[index_array] != correct_easter_egg_code[index_array]:
+                return False
+            index_array += 1
         return True
     return False
 def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_quadrant: str):
@@ -203,6 +210,7 @@ def move_enemies():
 es_level_coordinates: List[number] = []
 index_mv = 0
 angle = 0
+index_array = 0
 force = 0
 sprite_direction = 0
 aiming_quadrant = ""
@@ -236,7 +244,7 @@ correct_easter_egg_code: List[number] = []
 show_easter_egg = False
 enemy_sprites: List[game.LedSprite] = []
 show_easter_egg = False
-correct_easter_egg_code = [2, 3]
+correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
 max_game_level = 5
 max_enemy_sprites = 10
