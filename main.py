@@ -42,8 +42,8 @@ def check_for_maxlevel_win():
     basic.pause(1000)
     basic.clear_screen()
     if show_easter_egg == True:
-        basic.show_arrow(ArrowNames.NORTH, 5000)
-        control.reset()
+        basic.show_string("Easter Egg")
+        playing_easter_egg == True
     else:
         control.reset()
     return True
@@ -243,6 +243,7 @@ entered_easter_egg_code: List[number] = []
 correct_easter_egg_code: List[number] = []
 show_easter_egg = False
 enemy_sprites: List[game.LedSprite] = []
+playing_easter_egg = False
 show_easter_egg = False
 correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
@@ -308,13 +309,16 @@ while index_max_enemies <= max_enemy_sprites - 1:
 restartgame()
 
 def on_forever():
-    roll_around_sprite(main_sprite)
-    determineTouching()
-    determineLevelWin()
-    checkandhandleEnemytouch()
+    if playing_easter_egg == False:
+        roll_around_sprite(main_sprite)
+        determineTouching()
+        determineLevelWin()
+        checkandhandleEnemytouch()
+    else:
+        roll_around_sprite(main_sprite)
 basic.forever(on_forever)
 
 def on_forever2():
-    if level == max_game_level:
+    if level == max_game_level and playing_easter_egg == False:
         move_enemies()
 basic.forever(on_forever2)
