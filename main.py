@@ -303,13 +303,19 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
+maze_map_section = [
+    [255, 255, 0, 255, 255],
+    [255, 255, 0, 255, 255],
+    [0,   0,   0,   0,   0],
+    [255, 255, 0, 255, 255],
+    [255, 255, 0, 255, 255]]
 while index_max_enemies <= max_enemy_sprites - 1:
     enemy_sprites.append(game.create_sprite(0, 3))
     index_max_enemies += 1
 restartgame()
 
 def on_forever():
-    if playing_easter_egg == False:
+    if playing_easter_egg != True:
         roll_around_sprite(main_sprite)
         determineTouching()
         determineLevelWin()
