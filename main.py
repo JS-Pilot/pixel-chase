@@ -242,8 +242,8 @@ max_game_level = 0
 entered_easter_egg_code: List[number] = []
 correct_easter_egg_code: List[number] = []
 show_easter_egg = False
-enemy_sprites: List[game.LedSprite] = []
 playing_easter_egg = False
+enemy_sprites: List[game.LedSprite] = []
 show_easter_egg = False
 correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
@@ -303,18 +303,91 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
-maze_map_section = [
-    [255, 255, 0, 255, 255],
-    [255, 255, 0, 255, 255],
-    [0,   0,   0,   0,   0],
-    [255, 255, 0, 255, 255],
-    [255, 255, 0, 255, 255]]
+maze_current_section_coordinates: List[number] = []        
+maze_current_section_coordinates = [0, 0]
+maze_current_section: List[List[number]] = []       #[x[y]]
+maze_sections: List[List[List[List[number]]]] = []  #[X[Y]]
+maze_sections = [
+    [
+    [[255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255]],
+    [[255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]]
+    ],
+    [
+    [[255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 0, 0],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [0, 0, 0, 0, 0],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255]],
+    [[255, 255, 255, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255]]
+    ],
+    [
+    [[255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 0, 0],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [0, 0, 0, 0, 0],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [0, 0, 0, 0, 0],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255]]
+    ],    
+    [
+    [[255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 0],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [0, 0, 0, 0, 0],
+        [255, 255, 255, 255, 255],
+        [255, 255, 255, 255, 255]],
+    [[255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 0, 255, 255],
+        [255, 255, 255, 255, 255]]
+    ]    
+]
 while index_max_enemies <= max_enemy_sprites - 1:
     enemy_sprites.append(game.create_sprite(0, 3))
     index_max_enemies += 1
 restartgame()
 
 def on_forever():
+    if level == max_game_level and playing_easter_egg == False:
+        move_enemies()
+basic.forever(on_forever)
+
+def on_forever2():
     if playing_easter_egg != True:
         roll_around_sprite(main_sprite)
         determineTouching()
@@ -322,9 +395,4 @@ def on_forever():
         checkandhandleEnemytouch()
     else:
         roll_around_sprite(main_sprite)
-basic.forever(on_forever)
-
-def on_forever2():
-    if level == max_game_level and playing_easter_egg == False:
-        move_enemies()
 basic.forever(on_forever2)
