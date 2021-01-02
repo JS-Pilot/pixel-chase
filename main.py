@@ -217,9 +217,8 @@ def maze_display_current_section():
         maze_screen_index_y = 0
         while maze_screen_index_y < 5:
             maze_sprite = maze_sprites_x[maze_screen_index_y]
-            # This call to set will break when switching to Python (error is "")
-            maze_sprite.set(LedSpriteProperty.BRIGHTNESS,
-                maze_current_section[maze_screen_index_x][maze_screen_index_y])
+            # This call to set will break when switching to Python (maze_sprite becomes of unknown type)
+            #maze_sprite.set(LedSpriteProperty.BRIGHTNESS,maze_current_section[maze_screen_index_x][maze_screen_index_y])
             maze_screen_index_y += 1
         maze_screen_index_x += 1
 def move_enemies():

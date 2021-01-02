@@ -32,18 +32,14 @@ function pickRandomDirection () {
     return randomDirection
 }
 function check_for_maxlevel_win () {
-    let playing_easter_egg: boolean;
-if (level != max_game_level) {
+    if (level != max_game_level) {
         return false
     }
-    deleteEnemies()
-    goal_sprite.delete()
-    main_sprite.delete()
     easter_egg_is_possible = true
     basic.showIcon(IconNames.Happy, 1000)
-basic.pause(1000)
+    basic.pause(1000)
     basic.showIcon(IconNames.Heart, 1000)
-basic.pause(1000)
+    basic.pause(1000)
     basic.clearScreen()
     if (show_easter_egg == true) {
         basic.showString("Easter Egg")
@@ -61,12 +57,12 @@ input.onButtonPressed(Button.A, function () {
 })
 function deleteEnemies () {
     index_esprites = 0
-    while (index_esprites <= enemy_sprites.length - 1) {
+    while (index_esprites < enemy_sprites.length) {
         enemy_sprites[index_esprites].delete()
         index_esprites += 1
     }
     index_esprites_del = 0
-    while (index_esprites_del <= index_esprites - 1) {
+    while (index_esprites_del < index_esprites) {
         _py.py_array_pop(enemy_sprites)
 index_esprites_del += 1
     }
@@ -99,15 +95,17 @@ function determineLevelWin () {
     main_sprite.set(LedSpriteProperty.Blink, 100)
     basic.pause(2000)
     main_sprite.delete()
-    check_for_maxlevel_win()
     deleteEnemies()
-    level += 1
-    playLevel()
+    check_for_maxlevel_win()
+    if (playing_easter_egg != true) {
+        level += 1
+        playLevel()
+    }
     return true
 }
 function determineQuadrant (current_roll_in_degrees: number, current_pitch_in_degrees: number) {
     let quadrant: string;
-if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
+    if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
         quadrant = "top_right"
     } else if (current_roll_in_degrees >= 0 && current_pitch_in_degrees > 0) {
         quadrant = "bottom_right"
@@ -120,7 +118,7 @@ if (current_roll_in_degrees >= 0 && current_pitch_in_degrees <= 0) {
 }
 function checkandhandleEnemytouch () {
     index_enemies = 0
-    while (index_enemies <= enemy_sprites.length - 1) {
+    while (index_enemies < enemy_sprites.length) {
         if (main_sprite.isTouching(enemy_sprites[index_enemies])) {
             if (main_sprite.get(LedSpriteProperty.Y) == 4) {
                 main_sprite.set(LedSpriteProperty.Y, 0)
@@ -161,7 +159,7 @@ function playLevel () {
     goal_sprite.set(LedSpriteProperty.Brightness, 150)
     enemy_sprites_by_level = enemy_sprites_starting_coordinates_by_level[level - 1]
     indexpl = 0
-    while (indexpl <= enemy_sprites_by_level.length - 1) {
+    while (indexpl < enemy_sprites_by_level.length) {
         enemy_sprite_coordinates = enemy_sprites_by_level[indexpl]
         if (enemy_sprite_coordinates[0] != 9) {
             enemy_sprite = game.createSprite(enemy_sprite_coordinates[0], enemy_sprite_coordinates[1])
@@ -202,7 +200,7 @@ function update_and_check_easter_egg_code (easter_egg_code_part: number) {
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
-angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
+    angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
     if (aiming_quadrant == "top_right") {
         direction = angle
     } else if (aiming_quadrant == "bottom_right") {
@@ -246,8 +244,8 @@ function maze_display_current_section () {
 }
 function move_enemies () {
     let level_coordinates: number[][];
-index_mv = 0
-    while (index_mv <= enemy_sprites.length - 1) {
+    index_mv = 0
+    while (index_mv < enemy_sprites.length) {
         enemy_sprite = enemy_sprites[index_mv]
         level_coordinates = enemy_sprites_starting_coordinates_by_level[level - 1]
         es_level_coordinates = level_coordinates[index_mv]
@@ -262,7 +260,6 @@ index_mv = 0
     }
     basic.pause(520)
 }
-let playing_easter_egg2 = false
 let es_level_coordinates: number[] = []
 let index_mv = 0
 let maze_sprite: game.LedSprite = null
@@ -285,6 +282,7 @@ let touching_milliseconds_to_win = 0
 let lean = 0
 let index_esprites_del = 0
 let index_esprites = 0
+let playing_easter_egg = false
 let easter_egg_is_possible = false
 let level = 0
 let randomDirection = 0
@@ -324,18 +322,18 @@ maze_current_section = [[0]]
 maze_current_sections_x = [[[0]]]
 maze_current_section_coordinates = [0, 0]
 maze_sections = [[[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 255, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 255, 255, 255]]]]
-while (index_max_enemies <= max_enemy_sprites - 1) {
+while (index_max_enemies < max_enemy_sprites) {
     enemy_sprites.push(game.createSprite(0, 3))
     index_max_enemies += 1
 }
 restartgame()
 basic.forever(function () {
-    if (level == max_game_level && playing_easter_egg2 == false) {
+    if (level == max_game_level && playing_easter_egg == false) {
         move_enemies()
     }
 })
 basic.forever(function () {
-    if (playing_easter_egg2 != true) {
+    if (playing_easter_egg != true) {
         roll_around_sprite(main_sprite)
         determineTouching()
         determineLevelWin()
