@@ -43,7 +43,8 @@ def check_for_maxlevel_win():
     basic.clear_screen()
     if show_easter_egg == True:
         basic.show_string("Easter Egg")
-        playing_easter_egg == True
+        playing_easter_egg = True
+        maze_initialize()
     else:
         control.reset()
     return True
@@ -141,9 +142,11 @@ def playLevel():
     last_touch_time = 0
     sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
     main_sprite = game.create_sprite(sprite_coordinates[0], sprite_coordinates[1])
+    main_sprite.set(LedSpriteProperty.BRIGHTNESS, 200)
     sprite_coordinates = goal_sprite_starting_coordinates_by_level[level - 1]
     goal_sprite = game.create_sprite(sprite_coordinates[0], sprite_coordinates[1])
     goal_sprite.set(LedSpriteProperty.BLINK, 500)
+    goal_sprite.set(LedSpriteProperty.BRIGHTNESS, 150)
     enemy_sprites_by_level = enemy_sprites_starting_coordinates_by_level[level - 1]
     indexpl = 0
     while indexpl <= len(enemy_sprites_by_level) - 1:
@@ -192,6 +195,22 @@ def directionForQuadrant(absolute_roll: number, absolute_pitch: number, aiming_q
     else:
         direction = angle + 270
     return direction
+def maze_initialize():
+    global maze_current_section_coordinates, maze_screen_index_x, maze_screen_index_y
+    maze_current_section_coordinates = [2, 2]
+    maze_screen_index_x = 0
+    while maze_screen_index_x < 5:
+        maze_sprites[maze_screen_index_x] = []
+        maze_screen_index_y = 0
+        while maze_screen_index_y < 5:
+            maze_sprites[maze_screen_index_x].append(game.create_sprite(maze_screen_index_x, maze_screen_index_y))
+            maze_screen_index_y += 1
+        maze_screen_index_x += 1
+    maze_display_current_section()
+def maze_display_current_section():
+    global maze_current_sections_x, maze_current_section
+    maze_current_sections_x = maze_sections[maze_current_section_coordinates[0]]
+    maze_current_section = maze_current_sections_x[maze_current_section_coordinates[1]]
 def move_enemies():
     global index_mv, enemy_sprite, es_level_coordinates
     index_mv = 0
@@ -207,8 +226,11 @@ def move_enemies():
             enemy_sprite.move(1)
         index_mv += 1
     basic.pause(520)
+playing_easter_egg2 = False
 es_level_coordinates: List[number] = []
 index_mv = 0
+maze_screen_index_y = 0
+maze_screen_index_x = 0
 angle = 0
 index_array = 0
 force = 0
@@ -233,6 +255,11 @@ Random_Value = 0
 touching_for_total_of_milliseconds = 0
 last_touch_time = 0
 index_max_enemies = 0
+maze_sections: List[List[List[List[number]]]] = []
+maze_current_section_coordinates: List[number] = []
+maze_current_sections_x: List[List[List[number]]] = []
+maze_current_section: List[List[number]] = []
+maze_sprites: List[List[game.LedSprite]] = []
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
@@ -242,7 +269,7 @@ max_game_level = 0
 entered_easter_egg_code: List[number] = []
 correct_easter_egg_code: List[number] = []
 show_easter_egg = False
-playing_easter_egg = False
+maze_sprite = None
 enemy_sprites: List[game.LedSprite] = []
 show_easter_egg = False
 correct_easter_egg_code = [1, 2, 3]
@@ -303,92 +330,82 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
-maze_current_section_coordinates: List[number] = []        
+maze_sprites = []
+maze_current_section = [[0]]
+maze_current_sections_x = [[[0]]]
 maze_current_section_coordinates = [0, 0]
-maze_current_section: List[List[number]] = []       #[x[y]]
-maze_sections: List[List[List[List[number]]]] = []  #[X[Y]]
-maze_sections = [
-    [
-    [[255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255]],
-    [[255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]]
-    ],
-    [
-    [[255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 0, 0],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [0, 0, 0, 0, 0],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255]],
-    [[255, 255, 255, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255]]
-    ],
-    [
-    [[255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 0, 0],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [0, 0, 0, 0, 0],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [0, 0, 0, 0, 0],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255]]
-    ],    
-    [
-    [[255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 0],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [0, 0, 0, 0, 0],
-        [255, 255, 255, 255, 255],
-        [255, 255, 255, 255, 255]],
-    [[255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 0, 255, 255],
-        [255, 255, 255, 255, 255]]
-    ]    
-]
+maze_sections = [[[[255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255]],
+        [[255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]]],
+    [[[255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 0, 0],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [0, 0, 0, 0, 0],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255]],
+        [[255, 255, 255, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255]]],
+    [[[255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 0, 0],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [0, 0, 0, 0, 0],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [0, 0, 0, 0, 0],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255]]],
+    [[[255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 0],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [0, 0, 0, 0, 0],
+            [255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255]],
+        [[255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 0, 255, 255],
+            [255, 255, 255, 255, 255]]]]
 while index_max_enemies <= max_enemy_sprites - 1:
     enemy_sprites.append(game.create_sprite(0, 3))
     index_max_enemies += 1
 restartgame()
 
 def on_forever():
-    if level == max_game_level and playing_easter_egg == False:
+    if level == max_game_level and playing_easter_egg2 == False:
         move_enemies()
 basic.forever(on_forever)
 
 def on_forever2():
-    if playing_easter_egg != True:
+    if playing_easter_egg2 != True:
         roll_around_sprite(main_sprite)
         determineTouching()
         determineLevelWin()
