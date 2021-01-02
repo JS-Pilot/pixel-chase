@@ -208,9 +208,20 @@ def maze_initialize():
         maze_screen_index_x += 1
     maze_display_current_section()
 def maze_display_current_section():
-    global maze_current_sections_x, maze_current_section
+    global maze_current_sections_x, maze_current_section, maze_screen_index_x, maze_sprites_x, maze_screen_index_y, maze_sprite
     maze_current_sections_x = maze_sections[maze_current_section_coordinates[0]]
     maze_current_section = maze_current_sections_x[maze_current_section_coordinates[1]]
+    maze_screen_index_x = 0
+    while maze_screen_index_x < 5:
+        maze_sprites_x = maze_sprites[maze_screen_index_x]
+        maze_screen_index_y = 0
+        while maze_screen_index_y < 5:
+            maze_sprite = maze_sprites_x[maze_screen_index_y]
+            # This call to set will break when switching to Python (error is "")
+            maze_sprite.set(LedSpriteProperty.BRIGHTNESS,
+                maze_current_section[maze_screen_index_x][maze_screen_index_y])
+            maze_screen_index_y += 1
+        maze_screen_index_x += 1
 def move_enemies():
     global index_mv, enemy_sprite, es_level_coordinates
     index_mv = 0
@@ -229,6 +240,7 @@ def move_enemies():
 playing_easter_egg2 = False
 es_level_coordinates: List[number] = []
 index_mv = 0
+maze_sprite: game.LedSprite = None
 maze_screen_index_y = 0
 maze_screen_index_x = 0
 angle = 0
@@ -259,6 +271,7 @@ maze_sections: List[List[List[List[number]]]] = []
 maze_current_section_coordinates: List[number] = []
 maze_current_sections_x: List[List[List[number]]] = []
 maze_current_section: List[List[number]] = []
+maze_sprites_x: List[game.LedSprite] = []
 maze_sprites: List[List[game.LedSprite]] = []
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
@@ -269,7 +282,6 @@ max_game_level = 0
 entered_easter_egg_code: List[number] = []
 correct_easter_egg_code: List[number] = []
 show_easter_egg = False
-maze_sprite = None
 enemy_sprites: List[game.LedSprite] = []
 show_easter_egg = False
 correct_easter_egg_code = [1, 2, 3]
@@ -331,6 +343,7 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 1],
         [4, 0]]]
 maze_sprites = []
+maze_sprites_x = []
 maze_current_section = [[0]]
 maze_current_sections_x = [[[0]]]
 maze_current_section_coordinates = [0, 0]
