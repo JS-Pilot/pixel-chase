@@ -216,8 +216,7 @@ def maze_display_current_section():
         while maze_screen_index_y < 5:
             maze_sprite = maze_sprites_x[maze_screen_index_y]
             # This call to set will break when switching to Python (maze_sprite becomes of unknown type)
-            maze_sprite.set(LedSpriteProperty.BRIGHTNESS,
-                maze_current_section[maze_screen_index_x][maze_screen_index_y])
+            #maze_sprite.set(LedSpriteProperty.BRIGHTNESS, maze_current_section[maze_screen_index_x][maze_screen_index_y])
             maze_screen_index_y += 1
         maze_screen_index_x += 1
 def move_enemies():
@@ -270,7 +269,7 @@ maze_current_section_coordinates: List[number] = []
 maze_current_sections_x: List[List[List[number]]] = []
 maze_current_section: List[List[number]] = []
 maze_sprites_x: List[game.LedSprite] = []
-maze_sprites: List[List[game.LedSprite]] = [[game.create_sprite(0, 0)]]
+maze_sprites: List[List[game.LedSprite]] = []
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
@@ -340,7 +339,9 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
-maze_sprites = [[game.create_sprite(0, 0)]]
+     
+maze_sprites = []
+maze_sprites.append([])
 maze_sprites_x = []
 maze_current_section = [[0]]
 maze_current_sections_x = [[[0]]]
