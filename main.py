@@ -29,12 +29,9 @@ def pickRandomDirection():
         randomDirection = 315
     return randomDirection
 def check_for_maxlevel_win():
-    global easter_egg_is_possible
+    global easter_egg_is_possible, playing_easter_egg
     if level != max_game_level:
         return False
-    deleteEnemies()
-    goal_sprite.delete()
-    main_sprite.delete()
     easter_egg_is_possible = True
     basic.show_icon(IconNames.HAPPY, 1000)
     basic.pause(1000)
@@ -58,11 +55,11 @@ input.on_button_pressed(Button.A, on_button_pressed_a)
 def deleteEnemies():
     global index_esprites, index_esprites_del
     index_esprites = 0
-    while index_esprites <= len(enemy_sprites) - 1:
+    while index_esprites < len(enemy_sprites):
         enemy_sprites[index_esprites].delete()
         index_esprites += 1
     index_esprites_del = 0
-    while index_esprites_del <= index_esprites - 1:
+    while index_esprites_del < index_esprites:
         enemy_sprites.pop()
         index_esprites_del += 1
 def sanitize_lean(lean: number):
@@ -91,10 +88,11 @@ def determineLevelWin():
     main_sprite.set(LedSpriteProperty.BLINK, 100)
     basic.pause(2000)
     main_sprite.delete()
-    check_for_maxlevel_win()
     deleteEnemies()
-    level += 1
-    playLevel()
+    check_for_maxlevel_win()
+    if playing_easter_egg != True:
+        level += 1
+        playLevel()
     return True
 def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees: number):
     if current_roll_in_degrees >= 0 and current_pitch_in_degrees <= 0:
@@ -109,7 +107,7 @@ def determineQuadrant(current_roll_in_degrees: number, current_pitch_in_degrees:
 def checkandhandleEnemytouch():
     global index_enemies
     index_enemies = 0
-    while index_enemies <= len(enemy_sprites) - 1:
+    while index_enemies < len(enemy_sprites):
         if main_sprite.is_touching(enemy_sprites[index_enemies]):
             if main_sprite.get(LedSpriteProperty.Y) == 4:
                 main_sprite.set(LedSpriteProperty.Y, 0)
@@ -149,7 +147,7 @@ def playLevel():
     goal_sprite.set(LedSpriteProperty.BRIGHTNESS, 150)
     enemy_sprites_by_level = enemy_sprites_starting_coordinates_by_level[level - 1]
     indexpl = 0
-    while indexpl <= len(enemy_sprites_by_level) - 1:
+    while indexpl < len(enemy_sprites_by_level):
         enemy_sprite_coordinates = enemy_sprites_by_level[indexpl]
         if enemy_sprite_coordinates[0] != 9:
             enemy_sprite = game.create_sprite(enemy_sprite_coordinates[0], enemy_sprite_coordinates[1])
@@ -218,13 +216,14 @@ def maze_display_current_section():
         while maze_screen_index_y < 5:
             maze_sprite = maze_sprites_x[maze_screen_index_y]
             # This call to set will break when switching to Python (maze_sprite becomes of unknown type)
-            #maze_sprite.set(LedSpriteProperty.BRIGHTNESS,maze_current_section[maze_screen_index_x][maze_screen_index_y])
+            maze_sprite.set(LedSpriteProperty.BRIGHTNESS,
+                maze_current_section[maze_screen_index_x][maze_screen_index_y])
             maze_screen_index_y += 1
         maze_screen_index_x += 1
 def move_enemies():
     global index_mv, enemy_sprite, es_level_coordinates
     index_mv = 0
-    while index_mv <= len(enemy_sprites) - 1:
+    while index_mv < len(enemy_sprites):
         enemy_sprite = enemy_sprites[index_mv]
         level_coordinates = enemy_sprites_starting_coordinates_by_level[level - 1]
         es_level_coordinates = level_coordinates[index_mv]
@@ -236,7 +235,6 @@ def move_enemies():
             enemy_sprite.move(1)
         index_mv += 1
     basic.pause(520)
-playing_easter_egg2 = False
 es_level_coordinates: List[number] = []
 index_mv = 0
 maze_sprite: game.LedSprite = None
@@ -259,6 +257,7 @@ touching_milliseconds_to_win = 0
 lean = 0
 index_esprites_del = 0
 index_esprites = 0
+playing_easter_egg = False
 easter_egg_is_possible = False
 level = 0
 randomDirection = 0
@@ -271,7 +270,7 @@ maze_current_section_coordinates: List[number] = []
 maze_current_sections_x: List[List[List[number]]] = []
 maze_current_section: List[List[number]] = []
 maze_sprites_x: List[game.LedSprite] = []
-maze_sprites: List[List[game.LedSprite]] = []
+maze_sprites: List[List[game.LedSprite]] = [[game.create_sprite(0, 0)]]
 enemy_sprites_starting_coordinates_by_level: List[List[List[number]]] = []
 goal_sprite: game.LedSprite = None
 main_sprite: game.LedSprite = None
@@ -341,7 +340,7 @@ enemy_sprites_starting_coordinates_by_level = [[[9, 9],
         [4, 2],
         [4, 1],
         [4, 0]]]
-maze_sprites = []
+maze_sprites = [[game.create_sprite(0, 0)]]
 maze_sprites_x = []
 maze_current_section = [[0]]
 maze_current_sections_x = [[[0]]]
@@ -406,18 +405,18 @@ maze_sections = [[[[255, 255, 255, 255, 255],
             [255, 255, 0, 255, 255],
             [255, 255, 0, 255, 255],
             [255, 255, 255, 255, 255]]]]
-while index_max_enemies <= max_enemy_sprites - 1:
+while index_max_enemies < max_enemy_sprites:
     enemy_sprites.append(game.create_sprite(0, 3))
     index_max_enemies += 1
 restartgame()
 
 def on_forever():
-    if level == max_game_level and playing_easter_egg2 == False:
+    if level == max_game_level and playing_easter_egg == False:
         move_enemies()
 basic.forever(on_forever)
 
 def on_forever2():
-    if playing_easter_egg2 != True:
+    if playing_easter_egg != True:
         roll_around_sprite(main_sprite)
         determineTouching()
         determineLevelWin()
