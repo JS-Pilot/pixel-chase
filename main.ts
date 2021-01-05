@@ -64,7 +64,7 @@ function deleteEnemies () {
     index_esprites_del = 0
     while (index_esprites_del < index_esprites) {
         _py.py_array_pop(enemy_sprites)
-    index_esprites_del += 1
+index_esprites_del += 1
     }
 }
 function sanitize_lean (lean: number) {
@@ -200,7 +200,7 @@ function update_and_check_easter_egg_code (easter_egg_code_part: number) {
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
-    angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
+angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
     if (aiming_quadrant == "top_right") {
         direction = angle
     } else if (aiming_quadrant == "bottom_right") {
@@ -245,7 +245,7 @@ function maze_display_current_section () {
 }
 function move_enemies () {
     let level_coordinates: number[][];
-    index_mv = 0
+index_mv = 0
     while (index_mv < enemy_sprites.length) {
         enemy_sprite = enemy_sprites[index_mv]
         level_coordinates = enemy_sprites_starting_coordinates_by_level[level - 1]
@@ -314,7 +314,7 @@ max_game_level = 5
 let max_enemy_sprites = 10
 goal_sprite_starting_coordinates_by_level = [[0, 0], [2, 2], [2, 0], [0, 4], [2, 0]]
 main_sprite_starting_coordinates_by_level = [[2, 4], [2, 4], [2, 4], [4, 0], [2, 4]]
-main_sprite = game.createSprite(0, 4)
+main_sprite = game.createSprite(2, 4)
 goal_sprite = game.createSprite(4, 0)
 enemy_sprites_starting_coordinates_by_level = [[[9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[3, 4], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]], [[4, 1], [3, 2], [2, 3], [1, 4], [3, 0], [2, 1], [1, 2], [0, 3], [9, 9], [9, 9]], [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0]]]
 maze_sprites = []
