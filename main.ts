@@ -236,7 +236,7 @@ if (aiming_quadrant == "top_right") {
     } else if (aiming_quadrant == "bottom_left") {
         direction = angle + 180
     } else {
-        direction = angle + 270
+        direction = 360 - angle
     }
     return direction
 }
