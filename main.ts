@@ -68,14 +68,23 @@ index_esprites_del += 1
     }
 }
 function sanitize_lean (lean: number) {
-    if (Math.abs(lean) < 10) {
-        lean = 0
+    if (lean < -80) {
+        lean = -80
     } else if (lean > 80) {
         lean = 80
-    } else if (lean < -80) {
-        lean = -80
+    } else if (Math.abs(lean) < 10) {
+        lean = 0
     }
     return lean
+}
+function detect_wall_collision (s: game.LedSprite) {
+    maze_sprite_brightness = maze_current_section[s.get(LedSpriteProperty.X)][s.get(LedSpriteProperty.Y)]
+    // if wall sprite is "active"
+    if (maze_sprite_brightness > 0) {
+        return true
+    } else {
+        return false
+    }
 }
 function restartgame () {
     show_easter_egg = false
@@ -172,14 +181,20 @@ function playLevel () {
 function roll_around_sprite (s: game.LedSprite) {
     current_roll_in_degrees = sanitize_lean(input.rotation(Rotation.Roll))
     current_pitch_in_degrees = sanitize_lean(input.rotation(Rotation.Pitch))
+    force = Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2)
+    if (force <= 10) {
+        return
+    }
     aiming_quadrant = determineQuadrant(current_roll_in_degrees, current_pitch_in_degrees)
     sprite_direction = directionForQuadrant(Math.abs(current_roll_in_degrees), Math.abs(current_pitch_in_degrees), aiming_quadrant)
-    main_sprite.set(LedSpriteProperty.Direction, sprite_direction)
-    force = Math.sqrt(Math.abs(current_roll_in_degrees) ** 2 + Math.abs(current_pitch_in_degrees) ** 2)
-    if (force > 0.5) {
-        main_sprite.move(1)
-        basic.pause(500 - 5 * force)
+    s.set(LedSpriteProperty.Direction, sprite_direction)
+    current_position = [s.get(LedSpriteProperty.X), s.get(LedSpriteProperty.Y)]
+    s.move(1)
+    if (playing_easter_egg == true && detect_wall_collision(s) == true) {
+        s.set(LedSpriteProperty.X, current_position[0])
+        s.set(LedSpriteProperty.Y, current_position[1])
     }
+    basic.pause(500 - 5 * force)
 }
 function update_and_check_easter_egg_code (easter_egg_code_part: number) {
     entered_easter_egg_code.push(easter_egg_code_part)
@@ -200,11 +215,24 @@ function update_and_check_easter_egg_code (easter_egg_code_part: number) {
 }
 function directionForQuadrant (absolute_roll: number, absolute_pitch: number, aiming_quadrant: string) {
     let direction: number;
-angle = Math.atan(absolute_roll / Math.max(absolute_pitch, 0.001)) * 57.2958
-    if (aiming_quadrant == "top_right") {
+angle = Math.atan2(absolute_roll, absolute_pitch) * 57.2958
+    switch(Math.floor(angle/22.5)) {
+        case 0:
+            angle = 0
+            break;
+        case 1:
+        case 2:
+            angle = 45
+            break;
+        case 3:
+        case 4:
+            angle = 90
+            break;
+    }
+if (aiming_quadrant == "top_right") {
         direction = angle
     } else if (aiming_quadrant == "bottom_right") {
-        direction = angle + 90
+        direction = 180 - angle
     } else if (aiming_quadrant == "bottom_left") {
         direction = angle + 180
     } else {
@@ -266,11 +294,11 @@ let index_mv = 0
 let maze_sprite: game.LedSprite = null
 let maze_screen_index_y = 0
 let maze_screen_index_x = 0
-let angle = 0
 let index_array = 0
-let force = 0
+let current_position: number[] = []
 let sprite_direction = 0
 let aiming_quadrant = ""
+let force = 0
 let current_pitch_in_degrees = 0
 let current_roll_in_degrees = 0
 let enemy_sprite: game.LedSprite = null
@@ -280,6 +308,7 @@ let enemy_sprites_by_level: number[][] = []
 let sprite_coordinates: number[] = []
 let index_enemies = 0
 let touching_milliseconds_to_win = 0
+let maze_sprite_brightness = 0
 let lean = 0
 let index_esprites_del = 0
 let index_esprites = 0
@@ -307,6 +336,7 @@ let entered_easter_egg_code: number[] = []
 let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
 let enemy_sprites : game.LedSprite[] = []
+let angle = 0
 show_easter_egg = false
 correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
