@@ -37,9 +37,9 @@ function check_for_maxlevel_win () {
     }
     easter_egg_is_possible = true
     basic.showIcon(IconNames.Happy, 1000)
-basic.pause(1000)
+    basic.pause(1000)
     basic.showIcon(IconNames.Heart, 1000)
-basic.pause(1000)
+    basic.pause(1000)
     basic.clearScreen()
     if (show_easter_egg == true) {
         // basic.showString("Easter Egg")
@@ -63,8 +63,8 @@ function deleteEnemies () {
     }
     index_esprites_del = 0
     while (index_esprites_del < index_esprites) {
-        _py.py_array_pop(enemy_sprites)
-index_esprites_del += 1
+        enemy_sprites.pop()
+        index_esprites_del += 1
     }
 }
 function sanitize_lean (lean: number) {
