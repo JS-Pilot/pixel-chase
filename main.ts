@@ -1,10 +1,10 @@
 function determineTouching () {
+    // touching_for_total_of_milliseconds = 1000
     if (main_sprite.isTouching(goal_sprite)) {
         if (last_touch_time != 0) {
             touching_for_total_of_milliseconds = control.millis() - last_touch_time + touching_for_total_of_milliseconds
         }
         last_touch_time = control.millis()
-        touching_for_total_of_milliseconds = 1000
     } else {
         last_touch_time = 0
         touching_for_total_of_milliseconds = 0
@@ -42,7 +42,7 @@ basic.pause(1000)
 basic.pause(1000)
     basic.clearScreen()
     if (show_easter_egg == true) {
-        basic.showString("Easter Egg")
+        // basic.showString("Easter Egg")
         playing_easter_egg = true
         maze_initialize()
     } else {
@@ -156,7 +156,7 @@ input.onButtonPressed(Button.B, function () {
     }
 })
 function playLevel () {
-    touching_milliseconds_to_win = 1
+    touching_milliseconds_to_win = 500 / 2
     touching_for_total_of_milliseconds = 0
     last_touch_time = 0
     sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
