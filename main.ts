@@ -37,9 +37,9 @@ function check_for_maxlevel_win () {
     }
     easter_egg_is_possible = true
     basic.showIcon(IconNames.Happy, 1000)
-    basic.pause(1000)
+basic.pause(1000)
     basic.showIcon(IconNames.Heart, 1000)
-    basic.pause(1000)
+basic.pause(1000)
     basic.clearScreen()
     if (show_easter_egg == true) {
         // basic.showString("Easter Egg")
@@ -161,11 +161,11 @@ function playLevel () {
     last_touch_time = 0
     sprite_coordinates = main_sprite_starting_coordinates_by_level[level - 1]
     main_sprite = game.createSprite(sprite_coordinates[0], sprite_coordinates[1])
-    main_sprite.set(LedSpriteProperty.Brightness, 200)
+    main_sprite.set(LedSpriteProperty.Brightness, 150)
     sprite_coordinates = goal_sprite_starting_coordinates_by_level[level - 1]
     goal_sprite = game.createSprite(sprite_coordinates[0], sprite_coordinates[1])
     goal_sprite.set(LedSpriteProperty.Blink, 500)
-    goal_sprite.set(LedSpriteProperty.Brightness, 150)
+    goal_sprite.set(LedSpriteProperty.Brightness, 100)
     enemy_sprites_by_level = enemy_sprites_starting_coordinates_by_level[level - 1]
     indexpl = 0
     while (indexpl < enemy_sprites_by_level.length) {
@@ -252,7 +252,8 @@ function maze_initialize () {
         }
         maze_screen_index_x += 1
     }
-    main_sprite = game.createSprite(2, 4)
+    main_sprite = game.createSprite(2, 3)
+    main_sprite.set(LedSpriteProperty.Brightness, 150)    
     maze_display_current_section()
 }
 function maze_display_current_section () {
@@ -319,6 +320,7 @@ let randomDirection = 0
 let Random_Value = 0
 let touching_for_total_of_milliseconds = 0
 let last_touch_time = 0
+let enemy_sprites: game.LedSprite[] = []
 let index_max_enemies = 0
 let maze_sections: number[][][][] = []
 let maze_current_section_coordinates: number[] = []
@@ -335,7 +337,6 @@ let max_game_level = 0
 let entered_easter_egg_code: number[] = []
 let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
-let enemy_sprites : game.LedSprite[] = []
 let angle = 0
 show_easter_egg = false
 correct_easter_egg_code = [1, 2, 3]
@@ -352,7 +353,18 @@ maze_sprites_x = []
 maze_current_section = [[0]]
 maze_current_sections_x = [[[0]]]
 maze_current_section_coordinates = [0, 0]
-maze_sections = [[[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 255, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 255, 255, 255]]]]
+maze_sections = [[[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]],
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], 
+                    [[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]]], 
+                 [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], 
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], 
+                    [[255, 255, 255, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], 
+                 [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], 
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]], 
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255]]], 
+                 [[[255, 255, 255, 255, 255], [255, 255, 255, 255, 255], [255, 255, 255, 255, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], 
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [0, 0, 0, 0, 0], [255, 255, 255, 255, 255], [255, 255, 255, 255, 255]], 
+                    [[255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 0, 255, 255], [255, 255, 255, 255, 255]]]]
 while (index_max_enemies < max_enemy_sprites) {
     enemy_sprites.push(game.createSprite(0, 3))
     index_max_enemies += 1
