@@ -95,7 +95,7 @@ function restartgame () {
     main_sprite.delete()
     deleteEnemies()
     maze_sprites.splice(0, maze_sprites.length)
-    playLevel()
+playLevel()
 }
 function determineLevelWin () {
     if (touching_for_total_of_milliseconds < touching_milliseconds_to_win) {
@@ -211,6 +211,11 @@ function maze_check_switch_section(dir:number, pos: number[], s: game.LedSprite)
             }
         break;
         case 90:
+            if (pos[0] == 4) {
+                maze_current_section_coordinates[0] += 1
+                maze_display_current_section()
+                s.set(LedSpriteProperty.X, 0)                
+            }        
         break;
         case 180:
             if (pos[1] == 4) {
@@ -220,6 +225,11 @@ function maze_check_switch_section(dir:number, pos: number[], s: game.LedSprite)
             }        
         break;
         case 270:
+            if (pos[0] == 0) {
+                maze_current_section_coordinates[0] -= 1
+                maze_display_current_section()
+                s.set(LedSpriteProperty.X, 4)                
+            }         
         break;
     }
 }
@@ -323,8 +333,6 @@ let maze_sprite: game.LedSprite = null
 let maze_screen_index_y = 0
 let maze_screen_index_x = 0
 let index_array = 0
-let current_position: number[] = []
-let sprite_direction = 0
 let aiming_quadrant = ""
 let force = 0
 let current_pitch_in_degrees = 0
@@ -350,11 +358,9 @@ let last_touch_time = 0
 let enemy_sprites: game.LedSprite[] = []
 let index_max_enemies = 0
 let maze_sections: number[][][][] = []
-let maze_current_section_coordinates: number[] = []
 let maze_current_sections_x: number[][][] = []
 let maze_current_section: number[][] = []
 let maze_sprites_x: game.LedSprite[] = []
-let maze_sprites: game.LedSprite[][] = []
 let enemy_sprites_starting_coordinates_by_level: number[][][] = []
 let goal_sprite: game.LedSprite = null
 let main_sprite: game.LedSprite = null
@@ -365,6 +371,10 @@ let entered_easter_egg_code: number[] = []
 let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
 let angle = 0
+let maze_sprites: game.LedSprite[][] = []
+let maze_current_section_coordinates: number[] = []
+let sprite_direction = 0
+let current_position: number[] = []
 show_easter_egg = false
 correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
