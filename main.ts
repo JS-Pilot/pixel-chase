@@ -121,7 +121,7 @@ function deleteMaze () {
     maze_screen_index_x = 0
     while (maze_screen_index_x < 5) {
         maze_screen_index_y = 0
-        while (maze_screen_index_y < 5) {    
+        while (maze_screen_index_y < 5) {
             maze_sprites[maze_screen_index_x][maze_screen_index_y].delete()
             maze_screen_index_y += 1
         }
@@ -277,10 +277,10 @@ function maze_initialize () {
     maze_display_current_section()
 }
 function maze_display_current_section () {
-    if (maze_current_section_coordinates[0] < 0 || maze_current_section_coordinates[1] < 0) {
+    if (maze_current_section_coordinates[0] < 0 || maze_current_section_coordinates[1] < 0 || maze_current_section_coordinates[0] > 4 || maze_current_section_coordinates[1] > 4) {
         restartgame()
         return
-    }      
+    }
     maze_current_sections_x = maze_sections[maze_current_section_coordinates[0]]
     maze_current_section = maze_current_sections_x[maze_current_section_coordinates[1]]
     maze_screen_index_x = 0
@@ -357,11 +357,11 @@ let max_game_level = 0
 let entered_easter_egg_code: number[] = []
 let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
-let current_position: number[] = []
-let sprite_direction = 0
-let maze_current_section_coordinates: number[] = []
-let maze_sprites: game.LedSprite[][] = []
 let angle = 0
+let maze_sprites: game.LedSprite[][] = []
+let maze_current_section_coordinates: number[] = []
+let sprite_direction = 0
+let current_position: number[] = []
 function maze_check_switch_section(dir:number, pos: number[], s: game.LedSprite) {
     switch (dir) { 
         case 0:
