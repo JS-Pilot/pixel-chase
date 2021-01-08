@@ -88,14 +88,15 @@ function detect_wall_collision (s: game.LedSprite) {
 }
 function restartgame () {
     show_easter_egg = false
+    playing_easter_egg = false
     entered_easter_egg_code = []
     easter_egg_is_possible = false
     level = 1
     goal_sprite.delete()
     main_sprite.delete()
     deleteEnemies()
-    maze_sprites.splice(0, maze_sprites.length)
-playLevel()
+    deleteMaze()
+    playLevel()
 }
 function determineLevelWin () {
     if (touching_for_total_of_milliseconds < touching_milliseconds_to_win) {
@@ -112,6 +113,21 @@ function determineLevelWin () {
         playLevel()
     }
     return true
+}
+function deleteMaze () {
+    if (maze_sprites.length == 0) {
+        return
+    }
+    maze_screen_index_x = 0
+    while (maze_screen_index_x < 5) {
+        maze_screen_index_y = 0
+        while (maze_screen_index_y < 5) {    
+            maze_sprites[maze_screen_index_x][maze_screen_index_y].delete()
+            maze_screen_index_y += 1
+        }
+        maze_screen_index_x += 1
+    }
+    maze_sprites.splice(0, maze_sprites.length)
 }
 function determineQuadrant (current_roll_in_degrees: number, current_pitch_in_degrees: number) {
     let quadrant: string;
@@ -200,39 +216,6 @@ function roll_around_sprite (s: game.LedSprite) {
     }
     basic.pause(500 - 5 * force)
 }
-function maze_check_switch_section(dir:number, pos: number[], s: game.LedSprite) {
-    switch (dir) { 
-        case 0:
-        case 360:
-            if (pos[1] == 0) {
-                maze_current_section_coordinates[1] -= 1
-                maze_display_current_section()
-                s.set(LedSpriteProperty.Y, 4)
-            }
-        break;
-        case 90:
-            if (pos[0] == 4) {
-                maze_current_section_coordinates[0] += 1
-                maze_display_current_section()
-                s.set(LedSpriteProperty.X, 0)                
-            }        
-        break;
-        case 180:
-            if (pos[1] == 4) {
-                maze_current_section_coordinates[1] += 1
-                maze_display_current_section()
-                s.set(LedSpriteProperty.Y, 0)
-            }        
-        break;
-        case 270:
-            if (pos[0] == 0) {
-                maze_current_section_coordinates[0] -= 1
-                maze_display_current_section()
-                s.set(LedSpriteProperty.X, 4)                
-            }         
-        break;
-    }
-}
 function update_and_check_easter_egg_code (easter_egg_code_part: number) {
     entered_easter_egg_code.push(easter_egg_code_part)
     // array equality not working
@@ -294,6 +277,10 @@ function maze_initialize () {
     maze_display_current_section()
 }
 function maze_display_current_section () {
+    if (maze_current_section_coordinates[0] < 0 || maze_current_section_coordinates[1] < 0) {
+        restartgame()
+        return
+    }      
     maze_current_sections_x = maze_sections[maze_current_section_coordinates[0]]
     maze_current_section = maze_current_sections_x[maze_current_section_coordinates[1]]
     maze_screen_index_x = 0
@@ -330,8 +317,6 @@ index_mv = 0
 let es_level_coordinates: number[] = []
 let index_mv = 0
 let maze_sprite: game.LedSprite = null
-let maze_screen_index_y = 0
-let maze_screen_index_x = 0
 let index_array = 0
 let aiming_quadrant = ""
 let force = 0
@@ -343,6 +328,8 @@ let indexpl = 0
 let enemy_sprites_by_level: number[][] = []
 let sprite_coordinates: number[] = []
 let index_enemies = 0
+let maze_screen_index_y = 0
+let maze_screen_index_x = 0
 let touching_milliseconds_to_win = 0
 let maze_sprite_brightness = 0
 let lean = 0
@@ -370,11 +357,44 @@ let max_game_level = 0
 let entered_easter_egg_code: number[] = []
 let correct_easter_egg_code: number[] = []
 let show_easter_egg = false
-let angle = 0
-let maze_sprites: game.LedSprite[][] = []
-let maze_current_section_coordinates: number[] = []
-let sprite_direction = 0
 let current_position: number[] = []
+let sprite_direction = 0
+let maze_current_section_coordinates: number[] = []
+let maze_sprites: game.LedSprite[][] = []
+let angle = 0
+function maze_check_switch_section(dir:number, pos: number[], s: game.LedSprite) {
+    switch (dir) { 
+        case 0:
+        case 360:
+            if (pos[1] == 0) {
+                maze_current_section_coordinates[1] -= 1
+                maze_display_current_section()
+                s.set(LedSpriteProperty.Y, 4)
+            }
+        break;
+        case 90:
+            if (pos[0] == 4) {
+                maze_current_section_coordinates[0] += 1
+                maze_display_current_section()
+                s.set(LedSpriteProperty.X, 0)                
+            }        
+        break;
+        case 180:
+            if (pos[1] == 4) {
+                maze_current_section_coordinates[1] += 1
+                maze_display_current_section()
+                s.set(LedSpriteProperty.Y, 0)
+            }        
+        break;
+        case 270:
+            if (pos[0] == 0) {
+                maze_current_section_coordinates[0] -= 1              
+                maze_display_current_section()
+                s.set(LedSpriteProperty.X, 4)                
+            }         
+        break;
+    }
+}
 show_easter_egg = false
 correct_easter_egg_code = [1, 2, 3]
 entered_easter_egg_code = []
